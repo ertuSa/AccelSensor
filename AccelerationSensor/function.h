@@ -52,6 +52,10 @@ void I2C_Init(void);
 void I2C_SetBusSpeed(uint16_t speed);
 void I2C_Start(void);
 void I2C_SendAddr(uint8_t address);
+void I2C_SendStartAndSelect(uint8_t addr);
+void I2C_SendByte(uint8_t byte);
+uint8_t I2C_ReceiveDataByte_NACK(void);
+uint8_t I2C_ReceiveDataBytes_ACK(void);
 
 
 static inline void I2C_WaitForComplete(void)

@@ -85,3 +85,46 @@ void I2C_SendAddr(uint8_t address)
 		I2C_SetError(I2C_NoNACK);
 	}
 }
+
+// Function that send start signal and device address that we want to communicate on I2C bus.
+void I2C_SendStartAndSelect(uint8_t addr)
+{
+	I2C_Start();
+	I2C_SendAddr(addr);
+}
+
+// Function that send data to device through I2C bus.
+void I2C_SendByte(uint8_t byte)
+{
+	TWDR = byte;
+	TWCR = _BV(TWINT) | _BV(TWEN);
+	I2C_WaitForComplete();
+	if(TW_STATUS != TW_MT_DATA_ACK)
+	{
+		I2C_SetError(I2C_NoACK);
+	}
+}
+
+// Function that receive data byte from device through I2C bus.
+uint8_t I2C_ReceiveDataByte_NACK(void)
+{
+	TWCR = _BV(TWINT) | _BV(TWEN);
+	I2C_WaitForComplete();
+	if(TW_STATUS != TW_MR_DATA_NACK)
+	{
+		I2C_SetError(I2C_NoNACK);
+	}
+	return TWDR;
+}
+
+// Function that receive data bytes(more then one byte) from device through I2C bus.
+uint8_t I2C_ReceiveDataBytes_ACK(void)
+{
+	TWCR = _BV(TWEA) | _BV(TWINT) | _BV(TWEN);
+	I2C_WaitForComplete();
+	if(TW_STATUS != TW_MR_DATA_ACK)
+	{
+		I2C_SetError(I2C_NoACK);
+	}
+	return TWDR;
+}
