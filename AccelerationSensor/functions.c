@@ -17,13 +17,15 @@
 *		Constants
 ********************************************************************************/
 
-
+const uint16_t I2CBUSCLOCK = 100;
 
 /*******************************************************************************
 *		Variables
 ********************************************************************************/
 
 static uint8_t I2C_Error = I2C_NoError;
+
+
 
 /*******************************************************************************
 *		Body of functions
@@ -66,7 +68,7 @@ void I2C_Stop(void)
 }
 
 // Function that send address on I2C bus.
-void I2C_SendAddr(uint8_t address)
+void I2C_SendDevAddr(uint8_t address)
 {
 	uint8_t status;
 	if((address & 0x01) == 0)
@@ -90,7 +92,7 @@ void I2C_SendAddr(uint8_t address)
 void I2C_SendStartAndSelect(uint8_t addr)
 {
 	I2C_Start();
-	I2C_SendAddr(addr);
+	I2C_SendDevAddr(addr);
 }
 
 // Function that send data to device through I2C bus.
@@ -106,7 +108,7 @@ void I2C_SendByte(uint8_t byte)
 }
 
 // Function that receive data byte from device through I2C bus.
-uint8_t I2C_ReceiveDataByte_NACK(void)
+int8_t I2C_ReceiveDataByte_NACK(void)
 {
 	TWCR = _BV(TWINT) | _BV(TWEN);
 	I2C_WaitForComplete();
@@ -118,7 +120,7 @@ uint8_t I2C_ReceiveDataByte_NACK(void)
 }
 
 // Function that receive data bytes(more then one byte) from device through I2C bus.
-uint8_t I2C_ReceiveDataBytes_ACK(void)
+int8_t I2C_ReceiveDataBytes_ACK(void)
 {
 	TWCR = _BV(TWEA) | _BV(TWINT) | _BV(TWEN);
 	I2C_WaitForComplete();
