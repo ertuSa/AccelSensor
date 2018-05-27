@@ -1,4 +1,5 @@
-main.d main.o: .././main.c \
+functions.d functions.o: .././functions.c .././function.h \
+ d:\program\ files\atmel_studio7_0\7.0\toolchain\avr8\avr8-gnu-toolchain\avr\include\util\twi.h \
  d:\program\ files\atmel_studio7_0\7.0\toolchain\avr8\avr8-gnu-toolchain\avr\include\avr\io.h \
  d:\program\ files\atmel_studio7_0\7.0\toolchain\avr8\avr8-gnu-toolchain\avr\include\avr\sfr_defs.h \
  d:\program\ files\atmel_studio7_0\7.0\toolchain\avr8\avr8-gnu-toolchain\avr\include\inttypes.h \
@@ -9,12 +10,11 @@ main.d main.o: .././main.c \
  d:\program\ files\atmel_studio7_0\7.0\toolchain\avr8\avr8-gnu-toolchain\avr\include\avr\common.h \
  d:\program\ files\atmel_studio7_0\7.0\toolchain\avr8\avr8-gnu-toolchain\avr\include\avr\version.h \
  d:\program\ files\atmel_studio7_0\7.0\toolchain\avr8\avr8-gnu-toolchain\avr\include\avr\fuse.h \
- d:\program\ files\atmel_studio7_0\7.0\toolchain\avr8\avr8-gnu-toolchain\avr\include\avr\lock.h \
- d:\program\ files\atmel_studio7_0\7.0\toolchain\avr8\avr8-gnu-toolchain\avr\include\util\delay.h \
- d:\program\ files\atmel_studio7_0\7.0\toolchain\avr8\avr8-gnu-toolchain\avr\include\util\delay_basic.h \
- d:\program\ files\atmel_studio7_0\7.0\toolchain\avr8\avr8-gnu-toolchain\avr\include\math.h \
- .././function.h \
- d:\program\ files\atmel_studio7_0\7.0\toolchain\avr8\avr8-gnu-toolchain\avr\include\util\twi.h
+ d:\program\ files\atmel_studio7_0\7.0\toolchain\avr8\avr8-gnu-toolchain\avr\include\avr\lock.h
+
+.././function.h:
+
+d:\program\ files\atmel_studio7_0\7.0\toolchain\avr8\avr8-gnu-toolchain\avr\include\util\twi.h:
 
 d:\program\ files\atmel_studio7_0\7.0\toolchain\avr8\avr8-gnu-toolchain\avr\include\avr\io.h:
 
@@ -37,13 +37,3 @@ d:\program\ files\atmel_studio7_0\7.0\toolchain\avr8\avr8-gnu-toolchain\avr\incl
 d:\program\ files\atmel_studio7_0\7.0\toolchain\avr8\avr8-gnu-toolchain\avr\include\avr\fuse.h:
 
 d:\program\ files\atmel_studio7_0\7.0\toolchain\avr8\avr8-gnu-toolchain\avr\include\avr\lock.h:
-
-d:\program\ files\atmel_studio7_0\7.0\toolchain\avr8\avr8-gnu-toolchain\avr\include\util\delay.h:
-
-d:\program\ files\atmel_studio7_0\7.0\toolchain\avr8\avr8-gnu-toolchain\avr\include\util\delay_basic.h:
-
-d:\program\ files\atmel_studio7_0\7.0\toolchain\avr8\avr8-gnu-toolchain\avr\include\math.h:
-
-.././function.h:
-
-d:\program\ files\atmel_studio7_0\7.0\toolchain\avr8\avr8-gnu-toolchain\avr\include\util\twi.h:

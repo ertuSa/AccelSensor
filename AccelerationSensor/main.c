@@ -4,9 +4,13 @@
  * Created: 16.05.2018 23:01:13
  * Author : wyzku
  */ 
+#define F_CPU 16000000UL
 
 #include <avr/io.h>
+#include <util/delay.h>
 #include "function.h"
+
+
 
 typedef struct 
 {
@@ -15,51 +19,74 @@ typedef struct
 	int8_t z;
 }	accels_ts;
 
-accels_ts accelsTemp, accels;
+accels_ts accelsTemp;
+
+accels_ts accels = { 0, 0, 0};
 
 uint8_t state;
-static uint8_t buffer;
+static int8_t readBuffer;
+static uint8_t writeBuffer;
 
 
 int main(void)
 {
 	state = ACCEL_INIT_STATE;
+	DDRB |= _BV(5);
+	//DDRC |= _BV(PC0);
+	DDRC |= _BV(PC4) | _BV(PC5);
+	PRR &= ~_BV(PRTWI);
 	
     while (1) 
     {
+		
+		
+		//PORTB ^= _BV(PB5);
+		//_delay_ms(1000);
+		
 		switch(state)
 		{
 		case ACCEL_INIT_STATE:
 			I2C_Init();
 			state = ACCEL_CONFIG_STATE;
+			_delay_ms(100);
+			for (int x = 0; x < 4; x++)
+			{
+				_delay_ms(250);
+				PORTB ^= _BV(5);
+			}
+			
 		break;
 			
 		case ACCEL_CONFIG_STATE:			
 			I2C_SendStartAndSelect(LIS3DH_W);
-			I2C_SendByte(CTRL_REG1);
-			I2C_SendStartAndSelect(LIS3DH_R);
-			buffer = I2C_ReceiveDataByte_NACK();
-			I2C_Stop();
-	
-			buffer |= _BV(LPen) | _BV(ODR2) | _BV(ODR0);
-			
-			I2C_SendStartAndSelect(LIS3DH_W);
-			I2C_SendByte(CTRL_REG1);
-			I2C_SendByte(buffer);
+			I2C_SendByte(CTRL_REG1 | ADR_INC_MASK);
+			I2C_SendByte(0x5F);		// CTRL_REG1 = 0x5F
+			I2C_SendByte(0x00);		// CTRL_REG2 = 0x00
+			I2C_SendByte(0x00);		// CTRL_REG3 = 0x00
+			I2C_SendByte(0x80);		// CTRL_REG4 = 0x80
+			I2C_SendByte(0x00);		// CTRL_REG5 = 0x00
+			I2C_SendByte(0x00);		// CTRL_REG6 = 0x00
 			I2C_Stop();
 			
 			I2C_SendStartAndSelect(LIS3DH_W);
-			I2C_SendByte(CTRL_REG4);
-			I2C_SendStartAndSelect(LIS3DH_R);
-			buffer = I2C_ReceiveDataByte_NACK();
+			I2C_SendByte(WHO_AM_I);
+			I2C_Start();
+			I2C_SendByte(LIS3DH_R);
+			readBuffer = I2C_ReceiveDataByte_NACK();
 			I2C_Stop();
-			
-			buffer |= _BV(BDU) | _BV(FS1);
-			
-			I2C_SendStartAndSelect(LIS3DH_W);
-			I2C_SendByte(CTRL_REG1);
-			I2C_SendByte(buffer);
-			I2C_Stop();
+			if(0x33 == readBuffer)
+			{
+				PORTB |= _BV(PB5);
+				_delay_ms(2000);
+			}
+			else
+			{
+				for(uint8_t x = 0; x < 20; x++)
+				{
+					PORTB ^= _BV(PB5);
+					_delay_ms(100);
+				}
+			}
 			
 			state = ACCEL_RUN_STATE;
 		break;
@@ -72,22 +99,35 @@ int main(void)
 			accelsTemp.y = I2C_ReceiveDataBytes_ACK();
 			accelsTemp.z = I2C_ReceiveDataByte_NACK();
 			I2C_Stop();
+			for (int x = 0; x < 4; x++)
+			{
+				_delay_ms(500);
+				PORTB ^= _BV(5);
+			}
 			
 			state = ACCEL_WORKING_STATE;
 		break;
 			
 		case ACCEL_WORKING_STATE:
+			for (int x = 0; x < 2; x++)
+			{
+				_delay_ms(1000);
+				PORTB ^= _BV(5);
+			}
 			if((accelsTemp.x - accels.x) > 32)
 			{
-				PORTB |= _BV(5);
+				PORTB ^= _BV(5);
+				_delay_ms(2000);
 			}
 			else if((accelsTemp.y - accels.y) > 32)
 			{
-				PORTB |= _BV(5);
+				PORTB ^= _BV(5);
+				_delay_ms(2000);
 			}
 			else if((accelsTemp.z - accels.z) > 32)
 			{
-				PORTB |= _BV(5);
+				PORTB ^= _BV(5);
+				_delay_ms(2000);
 			}
 			else
 			{
@@ -95,7 +135,7 @@ int main(void)
 				accels.y = accelsTemp.y;
 				accels.z = accelsTemp.z;
 				
-				PORTB &= ~_BV(5);
+				//PORTB &= ~_BV(5);
 			}
 			
 			state = ACCEL_RUN_STATE;

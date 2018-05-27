@@ -19,8 +19,6 @@
 *		Defines
 ********************************************************************************/
 
-#define F_CPU			1000000
-
 #define I2C_NoError		0
 #define I2C_STARTError	1
 #define I2C_NoNACK		3
@@ -31,26 +29,46 @@
 #define ACCEL_RUN_STATE		2
 #define ACCEL_WORKING_STATE	4
 
+#define ADR_INC_MASK		0x80
+
 #define LIS3DH_R			0x31
 #define LIS3DH_W			0x30
 
 // LIS3DH registers
-#define CTRL_REG1			0x20
-#define CTRL_REG4			0x23
-#define OUT_X_L				0x28
-#define OUT_Y_L				0x2A
-#define OUT_Z_L				0x2C
+#define WHO_AM_I			0x0F
 
-// LIS3DH register bits
+#define CTR_REG0			0x1E
+#define SDO_PU_DISC			7
+
+#define CTRL_REG1			0x20
+#define XEN					0
+#define YEN					1
+#define ZEN					2
 #define LPen				3
-#define HR					3
 #define ODR0				4
 #define ODR1				5
 #define ODR2				6
 #define ODR3				7
-#define BDU					7
-#define FS1					5
+
+#define CTRL_REG2			0x21
+
+
+#define CTRL_REG3			0x22
+
+
+#define CTRL_REG4			0x23
+#define SIM					0
+#define ST0					1
+#define ST1					2
+#define HR					3
 #define FS0					4
+#define FS1					5
+#define BLE					6
+#define BDU					7
+
+#define OUT_X_L				0x28
+#define OUT_Y_L				0x2A
+#define OUT_Z_L				0x2C
 
 /*******************************************************************************
 *		Macros
@@ -75,7 +93,7 @@ static uint8_t I2C_Error;
 ********************************************************************************/
 
 void I2C_Init(void);
-void I2C_SetBusSpeed(uint16_t speed);
+void I2C_SetBusSpeed();
 void I2C_Start(void);
 void I2C_Stop(void);
 void I2C_SendDevAddr(uint8_t address);

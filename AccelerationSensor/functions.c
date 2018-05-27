@@ -17,7 +17,7 @@
 *		Constants
 ********************************************************************************/
 
-const uint16_t I2CBUSCLOCK = 100;
+
 
 /*******************************************************************************
 *		Variables
@@ -34,23 +34,15 @@ static uint8_t I2C_Error = I2C_NoError;
 // Function that initialize I2C communication in uC.
 void I2C_Init(void)
 {
+	I2C_SetBusSpeed();
 	TWCR = _BV(TWEA) | _BV(TWEN);
-	I2C_SetBusSpeed(I2CBUSCLOCK / 100);
 }
 
 // Function that sets I2C bus speed in uC.
 void I2C_SetBusSpeed(uint16_t speed)
 {
-	speed = (F_CPU / speed / 100 - 16) / 2;
-	uint8_t prescaler = 0;
-	while(speed > 255)
-	{
-		
-		prescaler++;
-		speed = speed / 4;
-	}
-	TWSR = (TWSR & (_BV(TWPS1) | _BV(TWPS0))) | prescaler;
-	TWBR = speed;
+	TWSR |= 0x00;	// TWSR = 
+	TWBR = _BV(TWBR6) | _BV(TWBR3);		// TWBR = 0x48
 }
 
 // Function that generate START signal on I2C bus.
