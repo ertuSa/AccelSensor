@@ -4,7 +4,8 @@
  * Created: 16.05.2018 23:01:13
  * Author : wyzku
  */ 
-#define F_CPU 16000000UL
+#define F_CPU				16000000UL
+#define ACCEL_TRESHOLD		31
 
 #include <avr/io.h>
 #include <util/delay.h>
@@ -21,7 +22,7 @@ typedef struct
 
 accels_ts accelsTemp;
 
-accels_ts accels = { 0, 0, 0};
+accels_ts accels = { 127, 127, 127};
 
 uint8_t state;
 static int8_t readBuffer;
@@ -57,13 +58,13 @@ int main(void)
 			
 		break;
 			
-		case ACCEL_CONFIG_STATE:			
+		case ACCEL_CONFIG_STATE:					
 			I2C_SendStartAndSelect(LIS3DH_W);
 			I2C_SendByte(CTRL_REG1 | ADR_INC_MASK);
 			I2C_SendByte(0x5F);		// CTRL_REG1 = 0x5F
 			I2C_SendByte(0x00);		// CTRL_REG2 = 0x00
 			I2C_SendByte(0x00);		// CTRL_REG3 = 0x00
-			I2C_SendByte(0x80);		// CTRL_REG4 = 0x80
+			I2C_SendByte(0x00);		// CTRL_REG4 = 0x80
 			I2C_SendByte(0x00);		// CTRL_REG5 = 0x00
 			I2C_SendByte(0x00);		// CTRL_REG6 = 0x00
 			I2C_Stop();
@@ -76,16 +77,31 @@ int main(void)
 			I2C_Stop();
 			if(0x33 == readBuffer)
 			{
-				PORTB |= _BV(PB5);
-				_delay_ms(2000);
-			}
-			else
-			{
 				for(uint8_t x = 0; x < 20; x++)
 				{
 					PORTB ^= _BV(PB5);
 					_delay_ms(100);
 				}
+			}
+			else
+			{
+				PORTB |= _BV(PB5);
+				_delay_ms(2000);
+			}
+			
+			I2C_SendStartAndSelect(LIS3DH_W);
+			I2C_SendByte(STATUS_REG_AUX);
+			I2C_SendStartAndSelect(LIS3DH_R);
+			readBuffer = I2C_ReceiveDataByte_NACK();
+			if(_BV(DA321) & readBuffer)
+			{
+				I2C_SendStartAndSelect(LIS3DH_W);
+				I2C_SendByte(OUT_X_L | 0x80);
+				I2C_SendStartAndSelect(LIS3DH_R);
+				accels.x = I2C_ReceiveDataBytes_ACK();
+				accels.y = I2C_ReceiveDataBytes_ACK();
+				accels.z = I2C_ReceiveDataByte_NACK();
+				I2C_Stop();
 			}
 			
 			state = ACCEL_RUN_STATE;
@@ -93,49 +109,56 @@ int main(void)
 			
 		case ACCEL_RUN_STATE:
 			I2C_SendStartAndSelect(LIS3DH_W);
-			I2C_SendByte(OUT_X_L | 0x80);
+			I2C_SendByte(STATUS_REG_AUX);
 			I2C_SendStartAndSelect(LIS3DH_R);
-			accelsTemp.x = I2C_ReceiveDataBytes_ACK();
-			accelsTemp.y = I2C_ReceiveDataBytes_ACK();
-			accelsTemp.z = I2C_ReceiveDataByte_NACK();
-			I2C_Stop();
-			for (int x = 0; x < 4; x++)
+			readBuffer = I2C_ReceiveDataByte_NACK();
+			if(_BV(DA321) & readBuffer)
 			{
-				_delay_ms(500);
-				PORTB ^= _BV(5);
+				I2C_SendStartAndSelect(LIS3DH_W);
+				I2C_SendByte(OUT_X_L | 0x80);
+				I2C_SendStartAndSelect(LIS3DH_R);
+				accelsTemp.x = I2C_ReceiveDataBytes_ACK();
+				accelsTemp.y = I2C_ReceiveDataBytes_ACK();
+				accelsTemp.z = I2C_ReceiveDataByte_NACK();
+				I2C_Stop();
+				
+				state = ACCEL_WORKING_STATE;
 			}
 			
-			state = ACCEL_WORKING_STATE;
+			
 		break;
 			
 		case ACCEL_WORKING_STATE:
-			for (int x = 0; x < 2; x++)
+			if(((accelsTemp.x * (-1)) - accels.x) > ACCEL_TRESHOLD )
 			{
-				_delay_ms(1000);
-				PORTB ^= _BV(5);
+				for(uint8_t x = 0; x < 20; x++)
+				{
+					PORTB ^= _BV(PB5);
+					_delay_ms(100);
+				}
+				PORTB &= ~_BV(PB5);
 			}
-			if((accelsTemp.x - accels.x) > 32)
+			else if(((accelsTemp.y * (-1)) - accels.y) > ACCEL_TRESHOLD )
 			{
-				PORTB ^= _BV(5);
-				_delay_ms(2000);
+				for(uint8_t x = 0; x < 20; x++)
+				{
+					PORTB ^= _BV(PB5);
+					_delay_ms(100);
+				}
+				PORTB &= ~_BV(PB5);
 			}
-			else if((accelsTemp.y - accels.y) > 32)
+			else if(((accelsTemp.z * (-1)) - accels.z) > ACCEL_TRESHOLD )
 			{
-				PORTB ^= _BV(5);
-				_delay_ms(2000);
-			}
-			else if((accelsTemp.z - accels.z) > 32)
-			{
-				PORTB ^= _BV(5);
-				_delay_ms(2000);
+				for(uint8_t x = 0; x < 20; x++)
+				{
+					PORTB ^= _BV(PB5);
+					_delay_ms(100);
+				}
+				PORTB &= ~_BV(PB5);
 			}
 			else
 			{
-				accels.x = accelsTemp.x;
-				accels.y = accelsTemp.y;
-				accels.z = accelsTemp.z;
 				
-				//PORTB &= ~_BV(5);
 			}
 			
 			state = ACCEL_RUN_STATE;

@@ -35,6 +35,16 @@
 #define LIS3DH_W			0x30
 
 // LIS3DH registers
+#define STATUS_REG_AUX		0x07
+#define DA1					0
+#define DA2					1
+#define DA3					2
+#define DA321				3
+#define OR1					4
+#define OR2					5
+#define OR3					6
+#define OR321				7
+
 #define WHO_AM_I			0x0F
 
 #define CTR_REG0			0x1E
