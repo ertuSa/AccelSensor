@@ -4,12 +4,21 @@
  * Created: 16.05.2018 23:01:13
  * Author : wyzku
  */ 
+
+
+
+
 #define F_CPU				16000000UL
+#define BAUD				9600
+#define MYUBRR				0x67 /* decimal 103 = baud rate 9600 */
+
 #define ACCEL_TRESHOLD		31
 
 #include <avr/io.h>
 #include <util/delay.h>
 #include "function.h"
+
+
 
 
 
@@ -24,6 +33,7 @@ accels_ts accelsTemp;
 
 accels_ts accels = { 127, 127, 127};
 
+int8_t temp;
 uint8_t state;
 static int8_t readBuffer;
 static uint8_t writeBuffer;
@@ -33,9 +43,11 @@ int main(void)
 {
 	state = ACCEL_INIT_STATE;
 	DDRB |= _BV(5);
-	//DDRC |= _BV(PC0);
 	DDRC |= _BV(PC4) | _BV(PC5);
-	PRR &= ~_BV(PRTWI);
+	PRR &= ~( _BV(PRTWI) | _BV(PRUSART0) );
+	USART_Init(MYUBRR);
+	
+	
 	
     while (1) 
     {
@@ -115,12 +127,13 @@ int main(void)
 			if(_BV(DA321) & readBuffer)
 			{
 				I2C_SendStartAndSelect(LIS3DH_W);
-				I2C_SendByte(OUT_X_L | 0x80);
+				I2C_SendByte(OUT_X_H | 0x80);
 				I2C_SendStartAndSelect(LIS3DH_R);
 				accelsTemp.x = I2C_ReceiveDataBytes_ACK();
+				temp = I2C_ReceiveDataBytes_ACK();
 				accelsTemp.y = I2C_ReceiveDataBytes_ACK();
+				temp = I2C_ReceiveDataBytes_ACK();
 				accelsTemp.z = I2C_ReceiveDataByte_NACK();
-				I2C_Stop();
 				
 				state = ACCEL_WORKING_STATE;
 			}
@@ -129,7 +142,12 @@ int main(void)
 		break;
 			
 		case ACCEL_WORKING_STATE:
-			if(((accelsTemp.x * (-1)) - accels.x) > ACCEL_TRESHOLD )
+			USART_Transmit(accelsTemp.x);
+			USART_Transmit(accelsTemp.y);
+			USART_Transmit(accelsTemp.z);
+			USART_Transmit("\n");
+			_delay_ms(500);
+			/*if(((accelsTemp.x * (-1)) - accels.x) > ACCEL_TRESHOLD )
 			{
 				for(uint8_t x = 0; x < 20; x++)
 				{
@@ -159,7 +177,7 @@ int main(void)
 			else
 			{
 				
-			}
+			}*/
 			
 			state = ACCEL_RUN_STATE;
 		break;

@@ -10,6 +10,7 @@ d:/program files/atmel_studio7_0/7.0/toolchain/avr8/avr8-gnu-toolchain/bin/../li
 Allocating common symbols
 Common symbol       size              file
 
+temp                0x1               main.o
 state               0x1               main.o
 accelsTemp          0x3               main.o
 
@@ -197,7 +198,7 @@ END GROUP
 .rela.plt
  *(.rela.plt)
 
-.text           0x00000000      0x3a8
+.text           0x00000000      0x358
  *(.vectors)
  .vectors       0x00000000       0x68 D:/Program Files/Atmel_Studio7_0/7.0/Packs/Atmel/ATmega_DFP/1.2.203/gcc/dev/atmega328p/avr5/crtatmega328p.o
                 0x00000000                __vector_default
@@ -313,14 +314,16 @@ END GROUP
  .text.I2C_ReceiveDataBytes_ACK
                 0x00000130       0x14 functions.o
                 0x00000130                I2C_ReceiveDataBytes_ACK
+ .text.USART_Transmit
+                0x00000144        0xe main.o
  .text.startup.main
-                0x00000144      0x260 main.o
-                0x00000144                main
-                0x000003a4                . = ALIGN (0x2)
+                0x00000152      0x202 main.o
+                0x00000152                main
+                0x00000354                . = ALIGN (0x2)
  *(.fini9)
- .fini9         0x000003a4        0x0 d:/program files/atmel_studio7_0/7.0/toolchain/avr8/avr8-gnu-toolchain/bin/../lib/gcc/avr/5.4.0/avr5\libgcc.a(_exit.o)
-                0x000003a4                _exit
-                0x000003a4                exit
+ .fini9         0x00000354        0x0 d:/program files/atmel_studio7_0/7.0/toolchain/avr8/avr8-gnu-toolchain/bin/../lib/gcc/avr/5.4.0/avr5\libgcc.a(_exit.o)
+                0x00000354                _exit
+                0x00000354                exit
  *(.fini9)
  *(.fini8)
  *(.fini8)
@@ -339,11 +342,11 @@ END GROUP
  *(.fini1)
  *(.fini1)
  *(.fini0)
- .fini0         0x000003a4        0x4 d:/program files/atmel_studio7_0/7.0/toolchain/avr8/avr8-gnu-toolchain/bin/../lib/gcc/avr/5.4.0/avr5\libgcc.a(_exit.o)
+ .fini0         0x00000354        0x4 d:/program files/atmel_studio7_0/7.0/toolchain/avr8/avr8-gnu-toolchain/bin/../lib/gcc/avr/5.4.0/avr5\libgcc.a(_exit.o)
  *(.fini0)
-                0x000003a8                _etext = .
+                0x00000358                _etext = .
 
-.data           0x00800100        0x4 load address 0x000003a8
+.data           0x00800100        0x6 load address 0x00000358
                 0x00800100                PROVIDE (__data_start, .)
  *(.data)
  *(.data*)
@@ -352,31 +355,34 @@ END GROUP
  *(.gnu.linkonce.d*)
  *(.rodata)
  *(.rodata*)
+ .rodata.str1.1
+                0x00800103        0x2 main.o
  *(.gnu.linkonce.r*)
-                0x00800104                . = ALIGN (0x2)
- *fill*         0x00800103        0x1 
-                0x00800104                _edata = .
-                0x00800104                PROVIDE (__data_end, .)
+                0x00800106                . = ALIGN (0x2)
+ *fill*         0x00800105        0x1 
+                0x00800106                _edata = .
+                0x00800106                PROVIDE (__data_end, .)
 
-.bss            0x00800104        0x5
-                0x00800104                PROVIDE (__bss_start, .)
+.bss            0x00800106        0x6
+                0x00800106                PROVIDE (__bss_start, .)
  *(.bss)
  *(.bss*)
  .bss.readBuffer
-                0x00800104        0x1 main.o
+                0x00800106        0x1 main.o
  *(COMMON)
- COMMON         0x00800105        0x4 main.o
-                0x00800105                state
-                0x00800106                accelsTemp
-                0x00800109                PROVIDE (__bss_end, .)
-                0x000003a8                __data_load_start = LOADADDR (.data)
-                0x000003ac                __data_load_end = (__data_load_start + SIZEOF (.data))
+ COMMON         0x00800107        0x5 main.o
+                0x00800107                temp
+                0x00800108                state
+                0x00800109                accelsTemp
+                0x0080010c                PROVIDE (__bss_end, .)
+                0x00000358                __data_load_start = LOADADDR (.data)
+                0x0000035e                __data_load_end = (__data_load_start + SIZEOF (.data))
 
-.noinit         0x00800109        0x0
+.noinit         0x0080010c        0x0
                 [!provide]                PROVIDE (__noinit_start, .)
  *(.noinit*)
                 [!provide]                PROVIDE (__noinit_end, .)
-                0x00800109                _end = .
+                0x0080010c                _end = .
                 [!provide]                PROVIDE (__heap_start, .)
 
 .eeprom         0x00810000        0x0

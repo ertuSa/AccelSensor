@@ -77,8 +77,11 @@
 #define BDU					7
 
 #define OUT_X_L				0x28
+#define OUT_X_H				0x29
 #define OUT_Y_L				0x2A
+#define OUT_Y_H				0x2B
 #define OUT_Z_L				0x2C
+#define OUT_Z_H				0x2E
 
 /*******************************************************************************
 *		Macros
@@ -125,5 +128,29 @@ static inline void I2C_SetError(uint8_t err)
 {
 	I2C_Error = err;
 }
+
+static inline void USART_Init(unsigned int ubrr)
+{
+	/* Set baud rate */
+	UBRR0H = (unsigned char)(ubrr>>8);
+	UBRR0L = (unsigned char)ubrr;
+	/* Enable receiver and transmitter */
+	UCSR0B = _BV(RXEN0) | _BV(TXEN0);
+	/* Set frame format: 8 data bit, 1 stop bit */
+	UCSR0C = _BV(UCSZ01) | _BV(UCSZ00);
+}
+
+static inline void USART_Transmit(unsigned char data)
+{
+	
+	/* Wait for empty transmit buffer */
+	while( !(UCSR0A & _BV(5)) )
+	{
+		;
+	}
+	UDR0 = data;
+}
+
+
 
 #endif
