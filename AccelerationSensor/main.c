@@ -5,9 +5,6 @@
  * Author : wyzku
  */ 
 
-
-
-
 #define F_CPU				16000000UL
 #define BAUD				9600
 #define MYUBRR				0x67 /* decimal 103 = baud rate 9600 */
@@ -18,43 +15,28 @@
 #include <util/delay.h>
 #include "function.h"
 
-
-
-
-
-typedef struct 
-{
-	int8_t x;
-	int8_t y;
-	int8_t z;
-}	accels_ts;
-
-accels_ts accelsTemp;
-
-accels_ts accels = { 127, 127, 127};
-
 int8_t temp;
 uint8_t state;
-static int8_t readBuffer;
-static uint8_t writeBuffer;
+int8_t readBuffer;
+uint8_t writeBuffer;
+accels_ts accelsTemp;
 
+accels_ts accels = {0, 0, 0};
 
 int main(void)
 {
 	state = ACCEL_INIT_STATE;
+	
+	/* configuration of uC, I/O pins */
 	DDRB |= _BV(5);
-	DDRC |= _BV(PC4) | _BV(PC5);
+	//DDRC |= _BV(PC4) | _BV(PC5);
 	PRR &= ~( _BV(PRTWI) | _BV(PRUSART0) );
+	
+	/* Initialization of USART communication */
 	USART_Init(MYUBRR);
-	
-	
 	
     while (1) 
     {
-		
-		
-		//PORTB ^= _BV(PB5);
-		//_delay_ms(1000);
 		
 		switch(state)
 		{
@@ -69,7 +51,8 @@ int main(void)
 			}
 			
 		break;
-			
+		
+		/* Configuration of slave device */	
 		case ACCEL_CONFIG_STATE:					
 			I2C_SendStartAndSelect(LIS3DH_W);
 			I2C_SendByte(CTRL_REG1 | ADR_INC_MASK);
@@ -81,6 +64,7 @@ int main(void)
 			I2C_SendByte(0x00);		// CTRL_REG6 = 0x00
 			I2C_Stop();
 			
+			/* Checking the communication with device */
 			I2C_SendStartAndSelect(LIS3DH_W);
 			I2C_SendByte(WHO_AM_I);
 			I2C_Start();
@@ -101,6 +85,7 @@ int main(void)
 				_delay_ms(2000);
 			}
 			
+			/* Get acceleration values from each axis */
 			I2C_SendStartAndSelect(LIS3DH_W);
 			I2C_SendByte(STATUS_REG_AUX);
 			I2C_SendStartAndSelect(LIS3DH_R);
@@ -136,17 +121,15 @@ int main(void)
 				accelsTemp.z = I2C_ReceiveDataByte_NACK();
 				
 				state = ACCEL_WORKING_STATE;
-			}
-			
-			
+			}	
 		break;
 			
 		case ACCEL_WORKING_STATE:
 			USART_Transmit(accelsTemp.x);
 			USART_Transmit(accelsTemp.y);
 			USART_Transmit(accelsTemp.z);
-			USART_Transmit("\n");
-			_delay_ms(500);
+			//USART_Transmit("\n");
+			_delay_ms(1000);
 			/*if(((accelsTemp.x * (-1)) - accels.x) > ACCEL_TRESHOLD )
 			{
 				for(uint8_t x = 0; x < 20; x++)
