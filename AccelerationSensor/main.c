@@ -1,9 +1,13 @@
 /*
- * AccelerationSensor.c
+ *	AccelerationSensor.c
  *
- * Created: 16.05.2018 23:01:13
- * Author : wyzku
+ *	Created: 16.05.2018 23:01:13
+ *	Author : wyzku
+ *
+ *	Notes:
+ *		-	define ASIC type(LIS3DH/MPU_9150) in Registers header file
  */ 
+#include "Registers.h"		
 
 #define F_CPU				16000000UL
 #define MYUBRR				0x67 /* decimal 103 = baud rate 9600 */
@@ -57,7 +61,9 @@ int main(void)
 		break;
 		
 		/* State that configure slave device */	
-		case ACCEL_CONFIG_STATE:					
+		case ACCEL_CONFIG_STATE:
+		
+		#ifdef LIS3DH					
 			I2C_SendStartAndSelect(LIS3DH_W);	//
 			I2C_SendByte(CTRL_REG1 | ADR_INC_MASK);
 			I2C_SendByte(0x5F);		// CTRL_REG1 = 0x57
@@ -67,15 +73,28 @@ int main(void)
 			I2C_SendByte(0x00);		// CTRL_REG5 = 0x00
 			I2C_SendByte(0x00);		// CTRL_REG6 = 0x00
 			I2C_Stop();
+		#endif
 			
 			/* Checking the communication with device */
+		#ifdef LIS3DH
 			I2C_SendStartAndSelect(LIS3DH_W);
 			I2C_SendByte(WHO_AM_I);
 			I2C_Start();
 			I2C_SendByte(LIS3DH_R);
 			readBuffer = I2C_ReceiveDataByte_NACK();
+		#else
+			I2C_SendStartAndSelect(MPU_9150_W);
+			I2C_SendByte(WHO_AM_I_REG);
+			I2C_Start();
+			I2C_SendByte(MPU_9150_R);
+			readBuffer = I2C_ReceiveDataBytes_ACK();
+		#endif	
 			I2C_Stop();
+		#ifdef LSI3DH
 			if(0x33 == readBuffer)
+		#else
+			if(0x68 == (readBuffer &= 0x7D))
+		#endif
 			{
 				//TODO: This part of code need to be deleted before release
 				/* For debugging only ***********/

@@ -3,23 +3,23 @@ AccelerationSensor.elf:     file format elf32-avr
 
 Sections:
 Idx Name          Size      VMA       LMA       File off  Algn
-  0 .data         00000000  00800100  00800100  000003f6  2**0
+  0 .data         00000000  00800100  00800100  000003fc  2**0
                   CONTENTS, ALLOC, LOAD, DATA
-  1 .text         00000382  00000000  00000000  00000074  2**1
+  1 .text         00000388  00000000  00000000  00000074  2**1
                   CONTENTS, ALLOC, LOAD, READONLY, CODE
-  2 .bss          0000000d  00800100  00800100  000003f6  2**0
+  2 .bss          0000000d  00800100  00800100  000003fc  2**0
                   ALLOC
-  3 .comment      00000030  00000000  00000000  000003f6  2**0
+  3 .comment      00000030  00000000  00000000  000003fc  2**0
                   CONTENTS, READONLY
-  4 .note.gnu.avr.deviceinfo 00000040  00000000  00000000  00000428  2**2
+  4 .note.gnu.avr.deviceinfo 00000040  00000000  00000000  0000042c  2**2
                   CONTENTS, READONLY
-  5 .debug_info   000005f4  00000000  00000000  00000468  2**0
+  5 .debug_info   000005f4  00000000  00000000  0000046c  2**0
                   CONTENTS, READONLY, DEBUGGING
-  6 .debug_abbrev 000005a2  00000000  00000000  00000a5c  2**0
+  6 .debug_abbrev 000005a2  00000000  00000000  00000a60  2**0
                   CONTENTS, READONLY, DEBUGGING
-  7 .debug_line   00000133  00000000  00000000  00000ffe  2**0
+  7 .debug_line   00000133  00000000  00000000  00001002  2**0
                   CONTENTS, READONLY, DEBUGGING
-  8 .debug_str    00000208  00000000  00000000  00001131  2**0
+  8 .debug_str    00000208  00000000  00000000  00001135  2**0
                   CONTENTS, READONLY, DEBUGGING
 
 Disassembly of section .text:
@@ -74,7 +74,7 @@ Disassembly of section .text:
   80:	b2 07       	cpc	r27, r18
   82:	e1 f7       	brne	.-8      	; 0x7c <.do_clear_bss_loop>
   84:	0e 94 9e 00 	call	0x13c	; 0x13c <main>
-  88:	0c 94 bf 01 	jmp	0x37e	; 0x37e <_exit>
+  88:	0c 94 c2 01 	jmp	0x384	; 0x384 <_exit>
 
 0000008c <__bad_interrupt>:
   8c:	0c 94 00 00 	jmp	0	; 0x0 <__vectors>
@@ -206,7 +206,7 @@ Disassembly of section .text:
  1a6:	31 c0       	rjmp	.+98     	; 0x20a <main+0xce>
  1a8:	82 30       	cpi	r24, 0x02	; 2
  1aa:	09 f4       	brne	.+2      	; 0x1ae <main+0x72>
- 1ac:	b6 c0       	rjmp	.+364    	; 0x31a <main+0x1de>
+ 1ac:	b9 c0       	rjmp	.+370    	; 0x320 <main+0x1e4>
  1ae:	84 30       	cpi	r24, 0x04	; 4
  1b0:	b9 f6       	brne	.-82     	; 0x160 <main+0x24>
  1b2:	00 93 05 01 	sts	0x0105, r16	; 0x800105 <temp>
@@ -236,7 +236,7 @@ Disassembly of section .text:
  202:	e1 f7       	brne	.-8      	; 0x1fc <main+0xc0>
  204:	00 c0       	rjmp	.+0      	; 0x206 <main+0xca>
  206:	00 00       	nop
- 208:	b7 c0       	rjmp	.+366    	; 0x378 <main+0x23c>
+ 208:	ba c0       	rjmp	.+372    	; 0x37e <main+0x242>
  20a:	2f ef       	ldi	r18, 0xFF	; 255
  20c:	34 e3       	ldi	r19, 0x34	; 52
  20e:	4c e0       	ldi	r20, 0x0C	; 12
@@ -280,96 +280,98 @@ Disassembly of section .text:
  276:	80 93 04 01 	sts	0x0104, r24	; 0x800104 <readBuffer>
  27a:	0e 94 63 00 	call	0xc6	; 0xc6 <I2C_Stop>
  27e:	80 91 04 01 	lds	r24, 0x0104	; 0x800104 <readBuffer>
- 282:	83 33       	cpi	r24, 0x33	; 51
- 284:	09 f0       	breq	.+2      	; 0x288 <main+0x14c>
- 286:	3e c0       	rjmp	.+124    	; 0x304 <main+0x1c8>
- 288:	84 e1       	ldi	r24, 0x14	; 20
- 28a:	95 b1       	in	r25, 0x05	; 5
- 28c:	9d 27       	eor	r25, r29
- 28e:	95 b9       	out	0x05, r25	; 5
- 290:	9f ef       	ldi	r25, 0xFF	; 255
- 292:	21 ee       	ldi	r18, 0xE1	; 225
- 294:	34 e0       	ldi	r19, 0x04	; 4
- 296:	91 50       	subi	r25, 0x01	; 1
- 298:	20 40       	sbci	r18, 0x00	; 0
- 29a:	30 40       	sbci	r19, 0x00	; 0
- 29c:	e1 f7       	brne	.-8      	; 0x296 <main+0x15a>
- 29e:	00 c0       	rjmp	.+0      	; 0x2a0 <main+0x164>
- 2a0:	00 00       	nop
- 2a2:	81 50       	subi	r24, 0x01	; 1
- 2a4:	91 f7       	brne	.-28     	; 0x28a <main+0x14e>
- 2a6:	80 e3       	ldi	r24, 0x30	; 48
- 2a8:	0e 94 71 00 	call	0xe2	; 0xe2 <I2C_SendStartAndSelect>
- 2ac:	87 e0       	ldi	r24, 0x07	; 7
- 2ae:	0e 94 79 00 	call	0xf2	; 0xf2 <I2C_SendByte>
- 2b2:	81 e3       	ldi	r24, 0x31	; 49
- 2b4:	0e 94 71 00 	call	0xe2	; 0xe2 <I2C_SendStartAndSelect>
- 2b8:	0e 94 83 00 	call	0x106	; 0x106 <I2C_ReceiveDataByte_NACK>
- 2bc:	80 93 04 01 	sts	0x0104, r24	; 0x800104 <readBuffer>
- 2c0:	83 ff       	sbrs	r24, 3
- 2c2:	5a c0       	rjmp	.+180    	; 0x378 <main+0x23c>
- 2c4:	80 e3       	ldi	r24, 0x30	; 48
- 2c6:	0e 94 71 00 	call	0xe2	; 0xe2 <I2C_SendStartAndSelect>
- 2ca:	88 ea       	ldi	r24, 0xA8	; 168
- 2cc:	0e 94 79 00 	call	0xf2	; 0xf2 <I2C_SendByte>
- 2d0:	81 e3       	ldi	r24, 0x31	; 49
- 2d2:	0e 94 71 00 	call	0xe2	; 0xe2 <I2C_SendStartAndSelect>
- 2d6:	0e 94 8d 00 	call	0x11a	; 0x11a <I2C_ReceiveDataBytes_ACK>
- 2da:	80 93 00 01 	sts	0x0100, r24	; 0x800100 <_edata>
- 2de:	0e 94 8d 00 	call	0x11a	; 0x11a <I2C_ReceiveDataBytes_ACK>
- 2e2:	80 93 05 01 	sts	0x0105, r24	; 0x800105 <temp>
- 2e6:	0e 94 8d 00 	call	0x11a	; 0x11a <I2C_ReceiveDataBytes_ACK>
- 2ea:	80 93 01 01 	sts	0x0101, r24	; 0x800101 <_edata+0x1>
- 2ee:	0e 94 8d 00 	call	0x11a	; 0x11a <I2C_ReceiveDataBytes_ACK>
- 2f2:	80 93 05 01 	sts	0x0105, r24	; 0x800105 <temp>
- 2f6:	0e 94 83 00 	call	0x106	; 0x106 <I2C_ReceiveDataByte_NACK>
- 2fa:	80 93 02 01 	sts	0x0102, r24	; 0x800102 <_edata+0x2>
- 2fe:	0e 94 63 00 	call	0xc6	; 0xc6 <I2C_Stop>
- 302:	3a c0       	rjmp	.+116    	; 0x378 <main+0x23c>
- 304:	2d 9a       	sbi	0x05, 5	; 5
- 306:	4f ef       	ldi	r20, 0xFF	; 255
- 308:	87 ea       	ldi	r24, 0xA7	; 167
- 30a:	91 e6       	ldi	r25, 0x61	; 97
- 30c:	41 50       	subi	r20, 0x01	; 1
- 30e:	80 40       	sbci	r24, 0x00	; 0
- 310:	90 40       	sbci	r25, 0x00	; 0
- 312:	e1 f7       	brne	.-8      	; 0x30c <main+0x1d0>
- 314:	00 c0       	rjmp	.+0      	; 0x316 <main+0x1da>
- 316:	00 00       	nop
- 318:	21 cf       	rjmp	.-446    	; 0x15c <main+0x20>
- 31a:	80 e3       	ldi	r24, 0x30	; 48
- 31c:	0e 94 71 00 	call	0xe2	; 0xe2 <I2C_SendStartAndSelect>
- 320:	87 e0       	ldi	r24, 0x07	; 7
- 322:	0e 94 79 00 	call	0xf2	; 0xf2 <I2C_SendByte>
- 326:	81 e3       	ldi	r24, 0x31	; 49
- 328:	0e 94 71 00 	call	0xe2	; 0xe2 <I2C_SendStartAndSelect>
- 32c:	0e 94 83 00 	call	0x106	; 0x106 <I2C_ReceiveDataByte_NACK>
- 330:	80 93 04 01 	sts	0x0104, r24	; 0x800104 <readBuffer>
- 334:	83 ff       	sbrs	r24, 3
- 336:	12 cf       	rjmp	.-476    	; 0x15c <main+0x20>
- 338:	80 e3       	ldi	r24, 0x30	; 48
- 33a:	0e 94 71 00 	call	0xe2	; 0xe2 <I2C_SendStartAndSelect>
- 33e:	89 ea       	ldi	r24, 0xA9	; 169
- 340:	0e 94 79 00 	call	0xf2	; 0xf2 <I2C_SendByte>
- 344:	81 e3       	ldi	r24, 0x31	; 49
- 346:	0e 94 71 00 	call	0xe2	; 0xe2 <I2C_SendStartAndSelect>
- 34a:	0e 94 8d 00 	call	0x11a	; 0x11a <I2C_ReceiveDataBytes_ACK>
- 34e:	80 93 08 01 	sts	0x0108, r24	; 0x800108 <accelsTemp>
- 352:	0e 94 8d 00 	call	0x11a	; 0x11a <I2C_ReceiveDataBytes_ACK>
- 356:	80 93 05 01 	sts	0x0105, r24	; 0x800105 <temp>
- 35a:	0e 94 8d 00 	call	0x11a	; 0x11a <I2C_ReceiveDataBytes_ACK>
- 35e:	80 93 09 01 	sts	0x0109, r24	; 0x800109 <accelsTemp+0x1>
- 362:	0e 94 8d 00 	call	0x11a	; 0x11a <I2C_ReceiveDataBytes_ACK>
- 366:	80 93 05 01 	sts	0x0105, r24	; 0x800105 <temp>
- 36a:	0e 94 83 00 	call	0x106	; 0x106 <I2C_ReceiveDataByte_NACK>
- 36e:	80 93 0a 01 	sts	0x010A, r24	; 0x80010a <accelsTemp+0x2>
- 372:	f0 92 06 01 	sts	0x0106, r15	; 0x800106 <state>
- 376:	f2 ce       	rjmp	.-540    	; 0x15c <main+0x20>
- 378:	c0 93 06 01 	sts	0x0106, r28	; 0x800106 <state>
+ 282:	8d 77       	andi	r24, 0x7D	; 125
+ 284:	80 93 04 01 	sts	0x0104, r24	; 0x800104 <readBuffer>
+ 288:	88 36       	cpi	r24, 0x68	; 104
+ 28a:	09 f0       	breq	.+2      	; 0x28e <main+0x152>
+ 28c:	3e c0       	rjmp	.+124    	; 0x30a <main+0x1ce>
+ 28e:	84 e1       	ldi	r24, 0x14	; 20
+ 290:	95 b1       	in	r25, 0x05	; 5
+ 292:	9d 27       	eor	r25, r29
+ 294:	95 b9       	out	0x05, r25	; 5
+ 296:	9f ef       	ldi	r25, 0xFF	; 255
+ 298:	21 ee       	ldi	r18, 0xE1	; 225
+ 29a:	34 e0       	ldi	r19, 0x04	; 4
+ 29c:	91 50       	subi	r25, 0x01	; 1
+ 29e:	20 40       	sbci	r18, 0x00	; 0
+ 2a0:	30 40       	sbci	r19, 0x00	; 0
+ 2a2:	e1 f7       	brne	.-8      	; 0x29c <main+0x160>
+ 2a4:	00 c0       	rjmp	.+0      	; 0x2a6 <main+0x16a>
+ 2a6:	00 00       	nop
+ 2a8:	81 50       	subi	r24, 0x01	; 1
+ 2aa:	91 f7       	brne	.-28     	; 0x290 <main+0x154>
+ 2ac:	80 e3       	ldi	r24, 0x30	; 48
+ 2ae:	0e 94 71 00 	call	0xe2	; 0xe2 <I2C_SendStartAndSelect>
+ 2b2:	87 e0       	ldi	r24, 0x07	; 7
+ 2b4:	0e 94 79 00 	call	0xf2	; 0xf2 <I2C_SendByte>
+ 2b8:	81 e3       	ldi	r24, 0x31	; 49
+ 2ba:	0e 94 71 00 	call	0xe2	; 0xe2 <I2C_SendStartAndSelect>
+ 2be:	0e 94 83 00 	call	0x106	; 0x106 <I2C_ReceiveDataByte_NACK>
+ 2c2:	80 93 04 01 	sts	0x0104, r24	; 0x800104 <readBuffer>
+ 2c6:	83 ff       	sbrs	r24, 3
+ 2c8:	5a c0       	rjmp	.+180    	; 0x37e <main+0x242>
+ 2ca:	80 e3       	ldi	r24, 0x30	; 48
+ 2cc:	0e 94 71 00 	call	0xe2	; 0xe2 <I2C_SendStartAndSelect>
+ 2d0:	88 ea       	ldi	r24, 0xA8	; 168
+ 2d2:	0e 94 79 00 	call	0xf2	; 0xf2 <I2C_SendByte>
+ 2d6:	81 e3       	ldi	r24, 0x31	; 49
+ 2d8:	0e 94 71 00 	call	0xe2	; 0xe2 <I2C_SendStartAndSelect>
+ 2dc:	0e 94 8d 00 	call	0x11a	; 0x11a <I2C_ReceiveDataBytes_ACK>
+ 2e0:	80 93 00 01 	sts	0x0100, r24	; 0x800100 <_edata>
+ 2e4:	0e 94 8d 00 	call	0x11a	; 0x11a <I2C_ReceiveDataBytes_ACK>
+ 2e8:	80 93 05 01 	sts	0x0105, r24	; 0x800105 <temp>
+ 2ec:	0e 94 8d 00 	call	0x11a	; 0x11a <I2C_ReceiveDataBytes_ACK>
+ 2f0:	80 93 01 01 	sts	0x0101, r24	; 0x800101 <_edata+0x1>
+ 2f4:	0e 94 8d 00 	call	0x11a	; 0x11a <I2C_ReceiveDataBytes_ACK>
+ 2f8:	80 93 05 01 	sts	0x0105, r24	; 0x800105 <temp>
+ 2fc:	0e 94 83 00 	call	0x106	; 0x106 <I2C_ReceiveDataByte_NACK>
+ 300:	80 93 02 01 	sts	0x0102, r24	; 0x800102 <_edata+0x2>
+ 304:	0e 94 63 00 	call	0xc6	; 0xc6 <I2C_Stop>
+ 308:	3a c0       	rjmp	.+116    	; 0x37e <main+0x242>
+ 30a:	2d 9a       	sbi	0x05, 5	; 5
+ 30c:	4f ef       	ldi	r20, 0xFF	; 255
+ 30e:	87 ea       	ldi	r24, 0xA7	; 167
+ 310:	91 e6       	ldi	r25, 0x61	; 97
+ 312:	41 50       	subi	r20, 0x01	; 1
+ 314:	80 40       	sbci	r24, 0x00	; 0
+ 316:	90 40       	sbci	r25, 0x00	; 0
+ 318:	e1 f7       	brne	.-8      	; 0x312 <main+0x1d6>
+ 31a:	00 c0       	rjmp	.+0      	; 0x31c <main+0x1e0>
+ 31c:	00 00       	nop
+ 31e:	1e cf       	rjmp	.-452    	; 0x15c <main+0x20>
+ 320:	80 e3       	ldi	r24, 0x30	; 48
+ 322:	0e 94 71 00 	call	0xe2	; 0xe2 <I2C_SendStartAndSelect>
+ 326:	87 e0       	ldi	r24, 0x07	; 7
+ 328:	0e 94 79 00 	call	0xf2	; 0xf2 <I2C_SendByte>
+ 32c:	81 e3       	ldi	r24, 0x31	; 49
+ 32e:	0e 94 71 00 	call	0xe2	; 0xe2 <I2C_SendStartAndSelect>
+ 332:	0e 94 83 00 	call	0x106	; 0x106 <I2C_ReceiveDataByte_NACK>
+ 336:	80 93 04 01 	sts	0x0104, r24	; 0x800104 <readBuffer>
+ 33a:	83 ff       	sbrs	r24, 3
+ 33c:	0f cf       	rjmp	.-482    	; 0x15c <main+0x20>
+ 33e:	80 e3       	ldi	r24, 0x30	; 48
+ 340:	0e 94 71 00 	call	0xe2	; 0xe2 <I2C_SendStartAndSelect>
+ 344:	89 ea       	ldi	r24, 0xA9	; 169
+ 346:	0e 94 79 00 	call	0xf2	; 0xf2 <I2C_SendByte>
+ 34a:	81 e3       	ldi	r24, 0x31	; 49
+ 34c:	0e 94 71 00 	call	0xe2	; 0xe2 <I2C_SendStartAndSelect>
+ 350:	0e 94 8d 00 	call	0x11a	; 0x11a <I2C_ReceiveDataBytes_ACK>
+ 354:	80 93 08 01 	sts	0x0108, r24	; 0x800108 <accelsTemp>
+ 358:	0e 94 8d 00 	call	0x11a	; 0x11a <I2C_ReceiveDataBytes_ACK>
+ 35c:	80 93 05 01 	sts	0x0105, r24	; 0x800105 <temp>
+ 360:	0e 94 8d 00 	call	0x11a	; 0x11a <I2C_ReceiveDataBytes_ACK>
+ 364:	80 93 09 01 	sts	0x0109, r24	; 0x800109 <accelsTemp+0x1>
+ 368:	0e 94 8d 00 	call	0x11a	; 0x11a <I2C_ReceiveDataBytes_ACK>
+ 36c:	80 93 05 01 	sts	0x0105, r24	; 0x800105 <temp>
+ 370:	0e 94 83 00 	call	0x106	; 0x106 <I2C_ReceiveDataByte_NACK>
+ 374:	80 93 0a 01 	sts	0x010A, r24	; 0x80010a <accelsTemp+0x2>
+ 378:	f0 92 06 01 	sts	0x0106, r15	; 0x800106 <state>
  37c:	ef ce       	rjmp	.-546    	; 0x15c <main+0x20>
+ 37e:	c0 93 06 01 	sts	0x0106, r28	; 0x800106 <state>
+ 382:	ec ce       	rjmp	.-552    	; 0x15c <main+0x20>
 
-0000037e <_exit>:
- 37e:	f8 94       	cli
+00000384 <_exit>:
+ 384:	f8 94       	cli
 
-00000380 <__stop_program>:
- 380:	ff cf       	rjmp	.-2      	; 0x380 <__stop_program>
+00000386 <__stop_program>:
+ 386:	ff cf       	rjmp	.-2      	; 0x386 <__stop_program>

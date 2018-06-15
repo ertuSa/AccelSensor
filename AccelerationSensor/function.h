@@ -14,6 +14,7 @@
 -------------------------------------------------------------------------------*/
 
 #include <util/twi.h>
+//#include "Registers.h"
 
 /*******************************************************************************
 *		Defines
@@ -31,57 +32,9 @@
 
 #define ADR_INC_MASK		0x80
 
-#define LIS3DH_R			0x31
-#define LIS3DH_W			0x30
-
-// LIS3DH registers
-#define STATUS_REG_AUX		0x07
-#define DA1					0
-#define DA2					1
-#define DA3					2
-#define DA321				3
-#define OR1					4
-#define OR2					5
-#define OR3					6
-#define OR321				7
-
-#define WHO_AM_I			0x0F
-
-#define CTR_REG0			0x1E
-#define SDO_PU_DISC			7
-
-#define CTRL_REG1			0x20
-#define XEN					0
-#define YEN					1
-#define ZEN					2
-#define LPen				3
-#define ODR0				4
-#define ODR1				5
-#define ODR2				6
-#define ODR3				7
-
-#define CTRL_REG2			0x21
 
 
-#define CTRL_REG3			0x22
 
-
-#define CTRL_REG4			0x23
-#define SIM					0
-#define ST0					1
-#define ST1					2
-#define HR					3
-#define FS0					4
-#define FS1					5
-#define BLE					6
-#define BDU					7
-
-#define OUT_X_L				0x28
-#define OUT_X_H				0x29
-#define OUT_Y_L				0x2A
-#define OUT_Y_H				0x2B
-#define OUT_Z_L				0x2C
-#define OUT_Z_H				0x2E
 
 /*******************************************************************************
 *		Macros
