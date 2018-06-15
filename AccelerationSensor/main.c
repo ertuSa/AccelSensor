@@ -14,8 +14,9 @@
 #include <util/delay.h>
 #include "function.h"
 
-int8_t temp, readBuffer;
-uint8_t state, writeBuffer;
+int8_t temp;
+int8_t readBuffer, tempX, tempY, tempZ;
+int8_t state, writeBuffer;
 accels_ts accelsTemp;
 
 accels_ts accels = {0, 0, 0};
@@ -59,10 +60,10 @@ int main(void)
 		case ACCEL_CONFIG_STATE:					
 			I2C_SendStartAndSelect(LIS3DH_W);	//
 			I2C_SendByte(CTRL_REG1 | ADR_INC_MASK);
-			I2C_SendByte(0x5F);		// CTRL_REG1 = 0x5F
+			I2C_SendByte(0x5F);		// CTRL_REG1 = 0x57
 			I2C_SendByte(0x00);		// CTRL_REG2 = 0x00
 			I2C_SendByte(0x00);		// CTRL_REG3 = 0x00
-			I2C_SendByte(0x00);		// CTRL_REG4 = 0x80
+			I2C_SendByte(0x80);		// CTRL_REG4 = 0x48
 			I2C_SendByte(0x00);		// CTRL_REG5 = 0x00
 			I2C_SendByte(0x00);		// CTRL_REG6 = 0x00
 			I2C_Stop();
@@ -96,7 +97,15 @@ int main(void)
 					I2C_SendByte(OUT_X_L | 0x80);
 					I2C_SendStartAndSelect(LIS3DH_R);
 					accels.x = I2C_ReceiveDataBytes_ACK();
+					//accels.x = (accels.x << 8);
+					//accels.x |= I2C_ReceiveDataBytes_ACK();
+					temp = I2C_ReceiveDataBytes_ACK();
 					accels.y = I2C_ReceiveDataBytes_ACK();
+					//accels.y = (accels.y << 8);
+					//accels.y |= I2C_ReceiveDataBytes_ACK();
+					//accels.z = I2C_ReceiveDataBytes_ACK();
+					//accels.z = (accels.z << 8);
+					temp = I2C_ReceiveDataBytes_ACK();
 					accels.z = I2C_ReceiveDataByte_NACK();
 					I2C_Stop();
 				}
@@ -126,9 +135,15 @@ int main(void)
 				I2C_SendByte(OUT_X_H | 0x80);
 				I2C_SendStartAndSelect(LIS3DH_R);
 				accelsTemp.x = I2C_ReceiveDataBytes_ACK();
+				//accelsTemp.x = (accelsTemp.x << 8);
+				//accelsTemp.x |= I2C_ReceiveDataBytes_ACK();
 				temp = I2C_ReceiveDataBytes_ACK();
 				accelsTemp.y = I2C_ReceiveDataBytes_ACK();
+				//accelsTemp.y = (accelsTemp.y << 8);
+				//accelsTemp.y |= I2C_ReceiveDataBytes_ACK();
 				temp = I2C_ReceiveDataBytes_ACK();
+				//accelsTemp.z = I2C_ReceiveDataBytes_ACK();
+				//accelsTemp.z = (accelsTemp.z << 8);
 				accelsTemp.z = I2C_ReceiveDataByte_NACK();
 				
 				state = ACCEL_WORKING_STATE;
@@ -137,11 +152,22 @@ int main(void)
 			
 		/* State that compare accel values from memory and values get from acceleration sensor */	
 		case ACCEL_WORKING_STATE:
+			temp = 0xA5;
+			USART_Transmit(temp);
+			//USART_Transmit((uint8_t)(accelsTemp.x >> 8));
 			USART_Transmit(accelsTemp.x);
+			temp = 0x5A;
+			USART_Transmit(temp);
+			//USART_Transmit((uint8_t)(accelsTemp.y >> 8));
 			USART_Transmit(accelsTemp.y);
+			USART_Transmit(temp);
+			//USART_Transmit((uint8_t)(accelsTemp.z >> 8));
 			USART_Transmit(accelsTemp.z);
+			USART_Transmit(temp);
+			USART_Transmit(temp);
+			
 			//USART_Transmit("\n");
-			_delay_ms(1000);
+			_delay_ms(50);
 			/*if(((accelsTemp.x * (-1)) - accels.x) > ACCEL_TRESHOLD )
 			{
 				for(uint8_t x = 0; x < 20; x++)

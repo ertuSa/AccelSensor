@@ -3,23 +3,23 @@ AccelerationSensor.elf:     file format elf32-avr
 
 Sections:
 Idx Name          Size      VMA       LMA       File off  Algn
-  0 .data         00000000  00800100  00800100  000003aa  2**0
+  0 .data         00000000  00800100  00800100  000003f6  2**0
                   CONTENTS, ALLOC, LOAD, DATA
-  1 .text         00000336  00000000  00000000  00000074  2**1
+  1 .text         00000382  00000000  00000000  00000074  2**1
                   CONTENTS, ALLOC, LOAD, READONLY, CODE
-  2 .bss          0000000a  00800100  00800100  000003aa  2**0
+  2 .bss          0000000d  00800100  00800100  000003f6  2**0
                   ALLOC
-  3 .comment      00000030  00000000  00000000  000003aa  2**0
+  3 .comment      00000030  00000000  00000000  000003f6  2**0
                   CONTENTS, READONLY
-  4 .note.gnu.avr.deviceinfo 00000040  00000000  00000000  000003dc  2**2
+  4 .note.gnu.avr.deviceinfo 00000040  00000000  00000000  00000428  2**2
                   CONTENTS, READONLY
-  5 .debug_info   000005f4  00000000  00000000  0000041c  2**0
+  5 .debug_info   000005f4  00000000  00000000  00000468  2**0
                   CONTENTS, READONLY, DEBUGGING
-  6 .debug_abbrev 000005a2  00000000  00000000  00000a10  2**0
+  6 .debug_abbrev 000005a2  00000000  00000000  00000a5c  2**0
                   CONTENTS, READONLY, DEBUGGING
-  7 .debug_line   00000133  00000000  00000000  00000fb2  2**0
+  7 .debug_line   00000133  00000000  00000000  00000ffe  2**0
                   CONTENTS, READONLY, DEBUGGING
-  8 .debug_str    00000208  00000000  00000000  000010e5  2**0
+  8 .debug_str    00000208  00000000  00000000  00001131  2**0
                   CONTENTS, READONLY, DEBUGGING
 
 Disassembly of section .text:
@@ -70,11 +70,11 @@ Disassembly of section .text:
   7c:	1d 92       	st	X+, r1
 
 0000007e <.do_clear_bss_start>:
-  7e:	aa 30       	cpi	r26, 0x0A	; 10
+  7e:	ad 30       	cpi	r26, 0x0D	; 13
   80:	b2 07       	cpc	r27, r18
   82:	e1 f7       	brne	.-8      	; 0x7c <.do_clear_bss_loop>
   84:	0e 94 9e 00 	call	0x13c	; 0x13c <main>
-  88:	0c 94 99 01 	jmp	0x332	; 0x332 <_exit>
+  88:	0c 94 bf 01 	jmp	0x37e	; 0x37e <_exit>
 
 0000008c <__bad_interrupt>:
   8c:	0c 94 00 00 	jmp	0	; 0x0 <__vectors>
@@ -161,191 +161,215 @@ Disassembly of section .text:
 
 0000013c <main>:
  13c:	10 92 06 01 	sts	0x0106, r1	; 0x800106 <state>
- 140:	d0 e2       	ldi	r29, 0x20	; 32
- 142:	c2 e0       	ldi	r28, 0x02	; 2
- 144:	17 e6       	ldi	r17, 0x67	; 103
- 146:	08 e1       	ldi	r16, 0x18	; 24
- 148:	86 e0       	ldi	r24, 0x06	; 6
- 14a:	f8 2e       	mov	r15, r24
- 14c:	ee 24       	eor	r14, r14
- 14e:	e3 94       	inc	r14
- 150:	94 e0       	ldi	r25, 0x04	; 4
- 152:	d9 2e       	mov	r13, r25
- 154:	80 91 06 01 	lds	r24, 0x0106	; 0x800106 <state>
- 158:	81 30       	cpi	r24, 0x01	; 1
- 15a:	09 f4       	brne	.+2      	; 0x15e <main+0x22>
- 15c:	48 c0       	rjmp	.+144    	; 0x1ee <main+0xb2>
- 15e:	d8 f0       	brcs	.+54     	; 0x196 <main+0x5a>
- 160:	82 30       	cpi	r24, 0x02	; 2
+ 140:	84 e0       	ldi	r24, 0x04	; 4
+ 142:	f8 2e       	mov	r15, r24
+ 144:	05 ea       	ldi	r16, 0xA5	; 165
+ 146:	1a e5       	ldi	r17, 0x5A	; 90
+ 148:	c2 e0       	ldi	r28, 0x02	; 2
+ 14a:	97 e6       	ldi	r25, 0x67	; 103
+ 14c:	e9 2e       	mov	r14, r25
+ 14e:	28 e1       	ldi	r18, 0x18	; 24
+ 150:	d2 2e       	mov	r13, r18
+ 152:	36 e0       	ldi	r19, 0x06	; 6
+ 154:	c3 2e       	mov	r12, r19
+ 156:	bb 24       	eor	r11, r11
+ 158:	b3 94       	inc	r11
+ 15a:	d0 e2       	ldi	r29, 0x20	; 32
+ 15c:	80 91 06 01 	lds	r24, 0x0106	; 0x800106 <state>
+ 160:	81 30       	cpi	r24, 0x01	; 1
  162:	09 f4       	brne	.+2      	; 0x166 <main+0x2a>
- 164:	b4 c0       	rjmp	.+360    	; 0x2ce <main+0x192>
- 166:	84 30       	cpi	r24, 0x04	; 4
- 168:	b9 f7       	brne	.-18     	; 0x158 <main+0x1c>
- 16a:	80 91 07 01 	lds	r24, 0x0107	; 0x800107 <accelsTemp>
- 16e:	0e 94 97 00 	call	0x12e	; 0x12e <USART_Transmit>
- 172:	80 91 08 01 	lds	r24, 0x0108	; 0x800108 <accelsTemp+0x1>
- 176:	0e 94 97 00 	call	0x12e	; 0x12e <USART_Transmit>
- 17a:	80 91 09 01 	lds	r24, 0x0109	; 0x800109 <accelsTemp+0x2>
- 17e:	0e 94 97 00 	call	0x12e	; 0x12e <USART_Transmit>
- 182:	2f ef       	ldi	r18, 0xFF	; 255
- 184:	33 ed       	ldi	r19, 0xD3	; 211
- 186:	40 e3       	ldi	r20, 0x30	; 48
- 188:	21 50       	subi	r18, 0x01	; 1
- 18a:	30 40       	sbci	r19, 0x00	; 0
- 18c:	40 40       	sbci	r20, 0x00	; 0
- 18e:	e1 f7       	brne	.-8      	; 0x188 <main+0x4c>
- 190:	00 c0       	rjmp	.+0      	; 0x192 <main+0x56>
- 192:	00 00       	nop
- 194:	cb c0       	rjmp	.+406    	; 0x32c <main+0x1f0>
- 196:	25 9a       	sbi	0x04, 5	; 4
- 198:	80 91 64 00 	lds	r24, 0x0064	; 0x800064 <__TEXT_REGION_LENGTH__+0x7e0064>
- 19c:	8d 77       	andi	r24, 0x7D	; 125
- 19e:	80 93 64 00 	sts	0x0064, r24	; 0x800064 <__TEXT_REGION_LENGTH__+0x7e0064>
- 1a2:	10 92 c5 00 	sts	0x00C5, r1	; 0x8000c5 <__TEXT_REGION_LENGTH__+0x7e00c5>
- 1a6:	10 93 c4 00 	sts	0x00C4, r17	; 0x8000c4 <__TEXT_REGION_LENGTH__+0x7e00c4>
- 1aa:	00 93 c1 00 	sts	0x00C1, r16	; 0x8000c1 <__TEXT_REGION_LENGTH__+0x7e00c1>
- 1ae:	f0 92 c2 00 	sts	0x00C2, r15	; 0x8000c2 <__TEXT_REGION_LENGTH__+0x7e00c2>
- 1b2:	0e 94 55 00 	call	0xaa	; 0xaa <I2C_Init>
- 1b6:	e0 92 06 01 	sts	0x0106, r14	; 0x800106 <state>
- 1ba:	2f ef       	ldi	r18, 0xFF	; 255
- 1bc:	31 ee       	ldi	r19, 0xE1	; 225
- 1be:	44 e0       	ldi	r20, 0x04	; 4
- 1c0:	21 50       	subi	r18, 0x01	; 1
- 1c2:	30 40       	sbci	r19, 0x00	; 0
- 1c4:	40 40       	sbci	r20, 0x00	; 0
- 1c6:	e1 f7       	brne	.-8      	; 0x1c0 <main+0x84>
- 1c8:	00 c0       	rjmp	.+0      	; 0x1ca <main+0x8e>
- 1ca:	00 00       	nop
- 1cc:	84 e0       	ldi	r24, 0x04	; 4
- 1ce:	90 e0       	ldi	r25, 0x00	; 0
- 1d0:	2f ef       	ldi	r18, 0xFF	; 255
- 1d2:	34 e3       	ldi	r19, 0x34	; 52
- 1d4:	4c e0       	ldi	r20, 0x0C	; 12
- 1d6:	21 50       	subi	r18, 0x01	; 1
- 1d8:	30 40       	sbci	r19, 0x00	; 0
- 1da:	40 40       	sbci	r20, 0x00	; 0
- 1dc:	e1 f7       	brne	.-8      	; 0x1d6 <main+0x9a>
- 1de:	00 c0       	rjmp	.+0      	; 0x1e0 <main+0xa4>
- 1e0:	00 00       	nop
- 1e2:	25 b1       	in	r18, 0x05	; 5
- 1e4:	2d 27       	eor	r18, r29
- 1e6:	25 b9       	out	0x05, r18	; 5
- 1e8:	01 97       	sbiw	r24, 0x01	; 1
- 1ea:	91 f7       	brne	.-28     	; 0x1d0 <main+0x94>
- 1ec:	b3 cf       	rjmp	.-154    	; 0x154 <main+0x18>
- 1ee:	80 e3       	ldi	r24, 0x30	; 48
- 1f0:	0e 94 71 00 	call	0xe2	; 0xe2 <I2C_SendStartAndSelect>
- 1f4:	80 ea       	ldi	r24, 0xA0	; 160
- 1f6:	0e 94 79 00 	call	0xf2	; 0xf2 <I2C_SendByte>
- 1fa:	8f e5       	ldi	r24, 0x5F	; 95
- 1fc:	0e 94 79 00 	call	0xf2	; 0xf2 <I2C_SendByte>
- 200:	80 e0       	ldi	r24, 0x00	; 0
- 202:	0e 94 79 00 	call	0xf2	; 0xf2 <I2C_SendByte>
- 206:	80 e0       	ldi	r24, 0x00	; 0
- 208:	0e 94 79 00 	call	0xf2	; 0xf2 <I2C_SendByte>
- 20c:	80 e0       	ldi	r24, 0x00	; 0
- 20e:	0e 94 79 00 	call	0xf2	; 0xf2 <I2C_SendByte>
- 212:	80 e0       	ldi	r24, 0x00	; 0
- 214:	0e 94 79 00 	call	0xf2	; 0xf2 <I2C_SendByte>
- 218:	80 e0       	ldi	r24, 0x00	; 0
- 21a:	0e 94 79 00 	call	0xf2	; 0xf2 <I2C_SendByte>
- 21e:	0e 94 63 00 	call	0xc6	; 0xc6 <I2C_Stop>
- 222:	80 e3       	ldi	r24, 0x30	; 48
- 224:	0e 94 71 00 	call	0xe2	; 0xe2 <I2C_SendStartAndSelect>
- 228:	8f e0       	ldi	r24, 0x0F	; 15
- 22a:	0e 94 79 00 	call	0xf2	; 0xf2 <I2C_SendByte>
- 22e:	0e 94 5b 00 	call	0xb6	; 0xb6 <I2C_Start>
- 232:	81 e3       	ldi	r24, 0x31	; 49
- 234:	0e 94 79 00 	call	0xf2	; 0xf2 <I2C_SendByte>
- 238:	0e 94 83 00 	call	0x106	; 0x106 <I2C_ReceiveDataByte_NACK>
- 23c:	80 93 04 01 	sts	0x0104, r24	; 0x800104 <readBuffer>
- 240:	0e 94 63 00 	call	0xc6	; 0xc6 <I2C_Stop>
- 244:	80 91 04 01 	lds	r24, 0x0104	; 0x800104 <readBuffer>
- 248:	83 33       	cpi	r24, 0x33	; 51
- 24a:	b1 f5       	brne	.+108    	; 0x2b8 <main+0x17c>
- 24c:	84 e1       	ldi	r24, 0x14	; 20
- 24e:	95 b1       	in	r25, 0x05	; 5
- 250:	9d 27       	eor	r25, r29
- 252:	95 b9       	out	0x05, r25	; 5
- 254:	9f ef       	ldi	r25, 0xFF	; 255
- 256:	21 ee       	ldi	r18, 0xE1	; 225
- 258:	34 e0       	ldi	r19, 0x04	; 4
- 25a:	91 50       	subi	r25, 0x01	; 1
- 25c:	20 40       	sbci	r18, 0x00	; 0
- 25e:	30 40       	sbci	r19, 0x00	; 0
- 260:	e1 f7       	brne	.-8      	; 0x25a <main+0x11e>
- 262:	00 c0       	rjmp	.+0      	; 0x264 <main+0x128>
- 264:	00 00       	nop
- 266:	81 50       	subi	r24, 0x01	; 1
- 268:	91 f7       	brne	.-28     	; 0x24e <main+0x112>
- 26a:	80 e3       	ldi	r24, 0x30	; 48
- 26c:	0e 94 71 00 	call	0xe2	; 0xe2 <I2C_SendStartAndSelect>
- 270:	87 e0       	ldi	r24, 0x07	; 7
- 272:	0e 94 79 00 	call	0xf2	; 0xf2 <I2C_SendByte>
- 276:	81 e3       	ldi	r24, 0x31	; 49
- 278:	0e 94 71 00 	call	0xe2	; 0xe2 <I2C_SendStartAndSelect>
- 27c:	0e 94 83 00 	call	0x106	; 0x106 <I2C_ReceiveDataByte_NACK>
- 280:	80 93 04 01 	sts	0x0104, r24	; 0x800104 <readBuffer>
- 284:	83 ff       	sbrs	r24, 3
- 286:	52 c0       	rjmp	.+164    	; 0x32c <main+0x1f0>
- 288:	80 e3       	ldi	r24, 0x30	; 48
- 28a:	0e 94 71 00 	call	0xe2	; 0xe2 <I2C_SendStartAndSelect>
- 28e:	88 ea       	ldi	r24, 0xA8	; 168
- 290:	0e 94 79 00 	call	0xf2	; 0xf2 <I2C_SendByte>
- 294:	81 e3       	ldi	r24, 0x31	; 49
- 296:	0e 94 71 00 	call	0xe2	; 0xe2 <I2C_SendStartAndSelect>
- 29a:	0e 94 8d 00 	call	0x11a	; 0x11a <I2C_ReceiveDataBytes_ACK>
- 29e:	80 93 00 01 	sts	0x0100, r24	; 0x800100 <_edata>
- 2a2:	0e 94 8d 00 	call	0x11a	; 0x11a <I2C_ReceiveDataBytes_ACK>
- 2a6:	80 93 01 01 	sts	0x0101, r24	; 0x800101 <_edata+0x1>
- 2aa:	0e 94 83 00 	call	0x106	; 0x106 <I2C_ReceiveDataByte_NACK>
- 2ae:	80 93 02 01 	sts	0x0102, r24	; 0x800102 <_edata+0x2>
- 2b2:	0e 94 63 00 	call	0xc6	; 0xc6 <I2C_Stop>
- 2b6:	3a c0       	rjmp	.+116    	; 0x32c <main+0x1f0>
- 2b8:	2d 9a       	sbi	0x05, 5	; 5
- 2ba:	4f ef       	ldi	r20, 0xFF	; 255
- 2bc:	87 ea       	ldi	r24, 0xA7	; 167
- 2be:	91 e6       	ldi	r25, 0x61	; 97
- 2c0:	41 50       	subi	r20, 0x01	; 1
- 2c2:	80 40       	sbci	r24, 0x00	; 0
- 2c4:	90 40       	sbci	r25, 0x00	; 0
- 2c6:	e1 f7       	brne	.-8      	; 0x2c0 <main+0x184>
- 2c8:	00 c0       	rjmp	.+0      	; 0x2ca <main+0x18e>
- 2ca:	00 00       	nop
- 2cc:	43 cf       	rjmp	.-378    	; 0x154 <main+0x18>
- 2ce:	80 e3       	ldi	r24, 0x30	; 48
- 2d0:	0e 94 71 00 	call	0xe2	; 0xe2 <I2C_SendStartAndSelect>
- 2d4:	87 e0       	ldi	r24, 0x07	; 7
- 2d6:	0e 94 79 00 	call	0xf2	; 0xf2 <I2C_SendByte>
- 2da:	81 e3       	ldi	r24, 0x31	; 49
- 2dc:	0e 94 71 00 	call	0xe2	; 0xe2 <I2C_SendStartAndSelect>
- 2e0:	0e 94 83 00 	call	0x106	; 0x106 <I2C_ReceiveDataByte_NACK>
- 2e4:	80 93 04 01 	sts	0x0104, r24	; 0x800104 <readBuffer>
- 2e8:	83 ff       	sbrs	r24, 3
- 2ea:	34 cf       	rjmp	.-408    	; 0x154 <main+0x18>
- 2ec:	80 e3       	ldi	r24, 0x30	; 48
- 2ee:	0e 94 71 00 	call	0xe2	; 0xe2 <I2C_SendStartAndSelect>
- 2f2:	89 ea       	ldi	r24, 0xA9	; 169
- 2f4:	0e 94 79 00 	call	0xf2	; 0xf2 <I2C_SendByte>
- 2f8:	81 e3       	ldi	r24, 0x31	; 49
- 2fa:	0e 94 71 00 	call	0xe2	; 0xe2 <I2C_SendStartAndSelect>
- 2fe:	0e 94 8d 00 	call	0x11a	; 0x11a <I2C_ReceiveDataBytes_ACK>
- 302:	80 93 07 01 	sts	0x0107, r24	; 0x800107 <accelsTemp>
- 306:	0e 94 8d 00 	call	0x11a	; 0x11a <I2C_ReceiveDataBytes_ACK>
- 30a:	80 93 05 01 	sts	0x0105, r24	; 0x800105 <temp>
- 30e:	0e 94 8d 00 	call	0x11a	; 0x11a <I2C_ReceiveDataBytes_ACK>
- 312:	80 93 08 01 	sts	0x0108, r24	; 0x800108 <accelsTemp+0x1>
- 316:	0e 94 8d 00 	call	0x11a	; 0x11a <I2C_ReceiveDataBytes_ACK>
- 31a:	80 93 05 01 	sts	0x0105, r24	; 0x800105 <temp>
- 31e:	0e 94 83 00 	call	0x106	; 0x106 <I2C_ReceiveDataByte_NACK>
- 322:	80 93 09 01 	sts	0x0109, r24	; 0x800109 <accelsTemp+0x2>
- 326:	d0 92 06 01 	sts	0x0106, r13	; 0x800106 <state>
- 32a:	14 cf       	rjmp	.-472    	; 0x154 <main+0x18>
- 32c:	c0 93 06 01 	sts	0x0106, r28	; 0x800106 <state>
- 330:	11 cf       	rjmp	.-478    	; 0x154 <main+0x18>
+ 164:	61 c0       	rjmp	.+194    	; 0x228 <main+0xec>
+ 166:	04 f5       	brge	.+64     	; 0x1a8 <main+0x6c>
+ 168:	81 11       	cpse	r24, r1
+ 16a:	fa cf       	rjmp	.-12     	; 0x160 <main+0x24>
+ 16c:	25 9a       	sbi	0x04, 5	; 4
+ 16e:	80 91 64 00 	lds	r24, 0x0064	; 0x800064 <__TEXT_REGION_LENGTH__+0x7e0064>
+ 172:	8d 77       	andi	r24, 0x7D	; 125
+ 174:	80 93 64 00 	sts	0x0064, r24	; 0x800064 <__TEXT_REGION_LENGTH__+0x7e0064>
+ 178:	10 92 c5 00 	sts	0x00C5, r1	; 0x8000c5 <__TEXT_REGION_LENGTH__+0x7e00c5>
+ 17c:	e0 92 c4 00 	sts	0x00C4, r14	; 0x8000c4 <__TEXT_REGION_LENGTH__+0x7e00c4>
+ 180:	d0 92 c1 00 	sts	0x00C1, r13	; 0x8000c1 <__TEXT_REGION_LENGTH__+0x7e00c1>
+ 184:	c0 92 c2 00 	sts	0x00C2, r12	; 0x8000c2 <__TEXT_REGION_LENGTH__+0x7e00c2>
+ 188:	0e 94 55 00 	call	0xaa	; 0xaa <I2C_Init>
+ 18c:	b0 92 06 01 	sts	0x0106, r11	; 0x800106 <state>
+ 190:	2f ef       	ldi	r18, 0xFF	; 255
+ 192:	31 ee       	ldi	r19, 0xE1	; 225
+ 194:	44 e0       	ldi	r20, 0x04	; 4
+ 196:	21 50       	subi	r18, 0x01	; 1
+ 198:	30 40       	sbci	r19, 0x00	; 0
+ 19a:	40 40       	sbci	r20, 0x00	; 0
+ 19c:	e1 f7       	brne	.-8      	; 0x196 <main+0x5a>
+ 19e:	00 c0       	rjmp	.+0      	; 0x1a0 <main+0x64>
+ 1a0:	00 00       	nop
+ 1a2:	84 e0       	ldi	r24, 0x04	; 4
+ 1a4:	90 e0       	ldi	r25, 0x00	; 0
+ 1a6:	31 c0       	rjmp	.+98     	; 0x20a <main+0xce>
+ 1a8:	82 30       	cpi	r24, 0x02	; 2
+ 1aa:	09 f4       	brne	.+2      	; 0x1ae <main+0x72>
+ 1ac:	b6 c0       	rjmp	.+364    	; 0x31a <main+0x1de>
+ 1ae:	84 30       	cpi	r24, 0x04	; 4
+ 1b0:	b9 f6       	brne	.-82     	; 0x160 <main+0x24>
+ 1b2:	00 93 05 01 	sts	0x0105, r16	; 0x800105 <temp>
+ 1b6:	85 ea       	ldi	r24, 0xA5	; 165
+ 1b8:	0e 94 97 00 	call	0x12e	; 0x12e <USART_Transmit>
+ 1bc:	80 91 08 01 	lds	r24, 0x0108	; 0x800108 <accelsTemp>
+ 1c0:	0e 94 97 00 	call	0x12e	; 0x12e <USART_Transmit>
+ 1c4:	10 93 05 01 	sts	0x0105, r17	; 0x800105 <temp>
+ 1c8:	8a e5       	ldi	r24, 0x5A	; 90
+ 1ca:	0e 94 97 00 	call	0x12e	; 0x12e <USART_Transmit>
+ 1ce:	80 91 09 01 	lds	r24, 0x0109	; 0x800109 <accelsTemp+0x1>
+ 1d2:	0e 94 97 00 	call	0x12e	; 0x12e <USART_Transmit>
+ 1d6:	80 91 05 01 	lds	r24, 0x0105	; 0x800105 <temp>
+ 1da:	0e 94 97 00 	call	0x12e	; 0x12e <USART_Transmit>
+ 1de:	80 91 0a 01 	lds	r24, 0x010A	; 0x80010a <accelsTemp+0x2>
+ 1e2:	0e 94 97 00 	call	0x12e	; 0x12e <USART_Transmit>
+ 1e6:	80 91 05 01 	lds	r24, 0x0105	; 0x800105 <temp>
+ 1ea:	0e 94 97 00 	call	0x12e	; 0x12e <USART_Transmit>
+ 1ee:	80 91 05 01 	lds	r24, 0x0105	; 0x800105 <temp>
+ 1f2:	0e 94 97 00 	call	0x12e	; 0x12e <USART_Transmit>
+ 1f6:	2f ef       	ldi	r18, 0xFF	; 255
+ 1f8:	30 e7       	ldi	r19, 0x70	; 112
+ 1fa:	42 e0       	ldi	r20, 0x02	; 2
+ 1fc:	21 50       	subi	r18, 0x01	; 1
+ 1fe:	30 40       	sbci	r19, 0x00	; 0
+ 200:	40 40       	sbci	r20, 0x00	; 0
+ 202:	e1 f7       	brne	.-8      	; 0x1fc <main+0xc0>
+ 204:	00 c0       	rjmp	.+0      	; 0x206 <main+0xca>
+ 206:	00 00       	nop
+ 208:	b7 c0       	rjmp	.+366    	; 0x378 <main+0x23c>
+ 20a:	2f ef       	ldi	r18, 0xFF	; 255
+ 20c:	34 e3       	ldi	r19, 0x34	; 52
+ 20e:	4c e0       	ldi	r20, 0x0C	; 12
+ 210:	21 50       	subi	r18, 0x01	; 1
+ 212:	30 40       	sbci	r19, 0x00	; 0
+ 214:	40 40       	sbci	r20, 0x00	; 0
+ 216:	e1 f7       	brne	.-8      	; 0x210 <main+0xd4>
+ 218:	00 c0       	rjmp	.+0      	; 0x21a <main+0xde>
+ 21a:	00 00       	nop
+ 21c:	25 b1       	in	r18, 0x05	; 5
+ 21e:	2d 27       	eor	r18, r29
+ 220:	25 b9       	out	0x05, r18	; 5
+ 222:	01 97       	sbiw	r24, 0x01	; 1
+ 224:	91 f7       	brne	.-28     	; 0x20a <main+0xce>
+ 226:	9a cf       	rjmp	.-204    	; 0x15c <main+0x20>
+ 228:	80 e3       	ldi	r24, 0x30	; 48
+ 22a:	0e 94 71 00 	call	0xe2	; 0xe2 <I2C_SendStartAndSelect>
+ 22e:	80 ea       	ldi	r24, 0xA0	; 160
+ 230:	0e 94 79 00 	call	0xf2	; 0xf2 <I2C_SendByte>
+ 234:	8f e5       	ldi	r24, 0x5F	; 95
+ 236:	0e 94 79 00 	call	0xf2	; 0xf2 <I2C_SendByte>
+ 23a:	80 e0       	ldi	r24, 0x00	; 0
+ 23c:	0e 94 79 00 	call	0xf2	; 0xf2 <I2C_SendByte>
+ 240:	80 e0       	ldi	r24, 0x00	; 0
+ 242:	0e 94 79 00 	call	0xf2	; 0xf2 <I2C_SendByte>
+ 246:	80 e8       	ldi	r24, 0x80	; 128
+ 248:	0e 94 79 00 	call	0xf2	; 0xf2 <I2C_SendByte>
+ 24c:	80 e0       	ldi	r24, 0x00	; 0
+ 24e:	0e 94 79 00 	call	0xf2	; 0xf2 <I2C_SendByte>
+ 252:	80 e0       	ldi	r24, 0x00	; 0
+ 254:	0e 94 79 00 	call	0xf2	; 0xf2 <I2C_SendByte>
+ 258:	0e 94 63 00 	call	0xc6	; 0xc6 <I2C_Stop>
+ 25c:	80 e3       	ldi	r24, 0x30	; 48
+ 25e:	0e 94 71 00 	call	0xe2	; 0xe2 <I2C_SendStartAndSelect>
+ 262:	8f e0       	ldi	r24, 0x0F	; 15
+ 264:	0e 94 79 00 	call	0xf2	; 0xf2 <I2C_SendByte>
+ 268:	0e 94 5b 00 	call	0xb6	; 0xb6 <I2C_Start>
+ 26c:	81 e3       	ldi	r24, 0x31	; 49
+ 26e:	0e 94 79 00 	call	0xf2	; 0xf2 <I2C_SendByte>
+ 272:	0e 94 83 00 	call	0x106	; 0x106 <I2C_ReceiveDataByte_NACK>
+ 276:	80 93 04 01 	sts	0x0104, r24	; 0x800104 <readBuffer>
+ 27a:	0e 94 63 00 	call	0xc6	; 0xc6 <I2C_Stop>
+ 27e:	80 91 04 01 	lds	r24, 0x0104	; 0x800104 <readBuffer>
+ 282:	83 33       	cpi	r24, 0x33	; 51
+ 284:	09 f0       	breq	.+2      	; 0x288 <main+0x14c>
+ 286:	3e c0       	rjmp	.+124    	; 0x304 <main+0x1c8>
+ 288:	84 e1       	ldi	r24, 0x14	; 20
+ 28a:	95 b1       	in	r25, 0x05	; 5
+ 28c:	9d 27       	eor	r25, r29
+ 28e:	95 b9       	out	0x05, r25	; 5
+ 290:	9f ef       	ldi	r25, 0xFF	; 255
+ 292:	21 ee       	ldi	r18, 0xE1	; 225
+ 294:	34 e0       	ldi	r19, 0x04	; 4
+ 296:	91 50       	subi	r25, 0x01	; 1
+ 298:	20 40       	sbci	r18, 0x00	; 0
+ 29a:	30 40       	sbci	r19, 0x00	; 0
+ 29c:	e1 f7       	brne	.-8      	; 0x296 <main+0x15a>
+ 29e:	00 c0       	rjmp	.+0      	; 0x2a0 <main+0x164>
+ 2a0:	00 00       	nop
+ 2a2:	81 50       	subi	r24, 0x01	; 1
+ 2a4:	91 f7       	brne	.-28     	; 0x28a <main+0x14e>
+ 2a6:	80 e3       	ldi	r24, 0x30	; 48
+ 2a8:	0e 94 71 00 	call	0xe2	; 0xe2 <I2C_SendStartAndSelect>
+ 2ac:	87 e0       	ldi	r24, 0x07	; 7
+ 2ae:	0e 94 79 00 	call	0xf2	; 0xf2 <I2C_SendByte>
+ 2b2:	81 e3       	ldi	r24, 0x31	; 49
+ 2b4:	0e 94 71 00 	call	0xe2	; 0xe2 <I2C_SendStartAndSelect>
+ 2b8:	0e 94 83 00 	call	0x106	; 0x106 <I2C_ReceiveDataByte_NACK>
+ 2bc:	80 93 04 01 	sts	0x0104, r24	; 0x800104 <readBuffer>
+ 2c0:	83 ff       	sbrs	r24, 3
+ 2c2:	5a c0       	rjmp	.+180    	; 0x378 <main+0x23c>
+ 2c4:	80 e3       	ldi	r24, 0x30	; 48
+ 2c6:	0e 94 71 00 	call	0xe2	; 0xe2 <I2C_SendStartAndSelect>
+ 2ca:	88 ea       	ldi	r24, 0xA8	; 168
+ 2cc:	0e 94 79 00 	call	0xf2	; 0xf2 <I2C_SendByte>
+ 2d0:	81 e3       	ldi	r24, 0x31	; 49
+ 2d2:	0e 94 71 00 	call	0xe2	; 0xe2 <I2C_SendStartAndSelect>
+ 2d6:	0e 94 8d 00 	call	0x11a	; 0x11a <I2C_ReceiveDataBytes_ACK>
+ 2da:	80 93 00 01 	sts	0x0100, r24	; 0x800100 <_edata>
+ 2de:	0e 94 8d 00 	call	0x11a	; 0x11a <I2C_ReceiveDataBytes_ACK>
+ 2e2:	80 93 05 01 	sts	0x0105, r24	; 0x800105 <temp>
+ 2e6:	0e 94 8d 00 	call	0x11a	; 0x11a <I2C_ReceiveDataBytes_ACK>
+ 2ea:	80 93 01 01 	sts	0x0101, r24	; 0x800101 <_edata+0x1>
+ 2ee:	0e 94 8d 00 	call	0x11a	; 0x11a <I2C_ReceiveDataBytes_ACK>
+ 2f2:	80 93 05 01 	sts	0x0105, r24	; 0x800105 <temp>
+ 2f6:	0e 94 83 00 	call	0x106	; 0x106 <I2C_ReceiveDataByte_NACK>
+ 2fa:	80 93 02 01 	sts	0x0102, r24	; 0x800102 <_edata+0x2>
+ 2fe:	0e 94 63 00 	call	0xc6	; 0xc6 <I2C_Stop>
+ 302:	3a c0       	rjmp	.+116    	; 0x378 <main+0x23c>
+ 304:	2d 9a       	sbi	0x05, 5	; 5
+ 306:	4f ef       	ldi	r20, 0xFF	; 255
+ 308:	87 ea       	ldi	r24, 0xA7	; 167
+ 30a:	91 e6       	ldi	r25, 0x61	; 97
+ 30c:	41 50       	subi	r20, 0x01	; 1
+ 30e:	80 40       	sbci	r24, 0x00	; 0
+ 310:	90 40       	sbci	r25, 0x00	; 0
+ 312:	e1 f7       	brne	.-8      	; 0x30c <main+0x1d0>
+ 314:	00 c0       	rjmp	.+0      	; 0x316 <main+0x1da>
+ 316:	00 00       	nop
+ 318:	21 cf       	rjmp	.-446    	; 0x15c <main+0x20>
+ 31a:	80 e3       	ldi	r24, 0x30	; 48
+ 31c:	0e 94 71 00 	call	0xe2	; 0xe2 <I2C_SendStartAndSelect>
+ 320:	87 e0       	ldi	r24, 0x07	; 7
+ 322:	0e 94 79 00 	call	0xf2	; 0xf2 <I2C_SendByte>
+ 326:	81 e3       	ldi	r24, 0x31	; 49
+ 328:	0e 94 71 00 	call	0xe2	; 0xe2 <I2C_SendStartAndSelect>
+ 32c:	0e 94 83 00 	call	0x106	; 0x106 <I2C_ReceiveDataByte_NACK>
+ 330:	80 93 04 01 	sts	0x0104, r24	; 0x800104 <readBuffer>
+ 334:	83 ff       	sbrs	r24, 3
+ 336:	12 cf       	rjmp	.-476    	; 0x15c <main+0x20>
+ 338:	80 e3       	ldi	r24, 0x30	; 48
+ 33a:	0e 94 71 00 	call	0xe2	; 0xe2 <I2C_SendStartAndSelect>
+ 33e:	89 ea       	ldi	r24, 0xA9	; 169
+ 340:	0e 94 79 00 	call	0xf2	; 0xf2 <I2C_SendByte>
+ 344:	81 e3       	ldi	r24, 0x31	; 49
+ 346:	0e 94 71 00 	call	0xe2	; 0xe2 <I2C_SendStartAndSelect>
+ 34a:	0e 94 8d 00 	call	0x11a	; 0x11a <I2C_ReceiveDataBytes_ACK>
+ 34e:	80 93 08 01 	sts	0x0108, r24	; 0x800108 <accelsTemp>
+ 352:	0e 94 8d 00 	call	0x11a	; 0x11a <I2C_ReceiveDataBytes_ACK>
+ 356:	80 93 05 01 	sts	0x0105, r24	; 0x800105 <temp>
+ 35a:	0e 94 8d 00 	call	0x11a	; 0x11a <I2C_ReceiveDataBytes_ACK>
+ 35e:	80 93 09 01 	sts	0x0109, r24	; 0x800109 <accelsTemp+0x1>
+ 362:	0e 94 8d 00 	call	0x11a	; 0x11a <I2C_ReceiveDataBytes_ACK>
+ 366:	80 93 05 01 	sts	0x0105, r24	; 0x800105 <temp>
+ 36a:	0e 94 83 00 	call	0x106	; 0x106 <I2C_ReceiveDataByte_NACK>
+ 36e:	80 93 0a 01 	sts	0x010A, r24	; 0x80010a <accelsTemp+0x2>
+ 372:	f0 92 06 01 	sts	0x0106, r15	; 0x800106 <state>
+ 376:	f2 ce       	rjmp	.-540    	; 0x15c <main+0x20>
+ 378:	c0 93 06 01 	sts	0x0106, r28	; 0x800106 <state>
+ 37c:	ef ce       	rjmp	.-546    	; 0x15c <main+0x20>
 
-00000332 <_exit>:
- 332:	f8 94       	cli
+0000037e <_exit>:
+ 37e:	f8 94       	cli
 
-00000334 <__stop_program>:
- 334:	ff cf       	rjmp	.-2      	; 0x334 <__stop_program>
+00000380 <__stop_program>:
+ 380:	ff cf       	rjmp	.-2      	; 0x380 <__stop_program>
