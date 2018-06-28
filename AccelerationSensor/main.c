@@ -18,8 +18,9 @@
 #include <util/delay.h>
 #include "function.h"
 
-int8_t temp;
-int8_t readBuffer, tempX, tempY, tempZ;
+int16_t temp, counter;
+int8_t readBuffer;
+int16_t tempX, tempY, tempZ;
 int8_t state, writeBuffer;
 accels_ts accelsTemp;
 
@@ -73,6 +74,28 @@ int main(void)
 			I2C_SendByte(0x00);		// CTRL_REG5 = 0x00
 			I2C_SendByte(0x00);		// CTRL_REG6 = 0x00
 			I2C_Stop();
+		#else
+			I2C_SendStartAndSelect(MPU_9150_W);
+			I2C_SendByte(INT_ENABLE_REG);
+			I2C_SendByte(0x01);
+			I2C_Stop();
+			
+			I2C_SendStartAndSelect(MPU_9150_W);
+			I2C_SendByte(SMPRT_DIV_REG);
+			I2C_SendByte(0x07);
+			I2C_SendByte(0x00);
+			I2C_SendByte(0x00);
+			I2C_SendByte(0x00);
+			I2C_Stop();
+			
+			I2C_SendStartAndSelect(MPU_9150_W);
+			I2C_SendByte(PWR_MGMT_1_REG);
+			I2C_SendByte(0x09);
+			I2C_Stop();
+			
+			
+			
+			
 		#endif
 			
 			/* Checking the communication with device */
@@ -85,16 +108,15 @@ int main(void)
 		#else
 			I2C_SendStartAndSelect(MPU_9150_W);
 			I2C_SendByte(WHO_AM_I_REG);
-			I2C_Start();
-			I2C_SendByte(MPU_9150_R);
-			readBuffer = I2C_ReceiveDataBytes_ACK();
+			I2C_SendStartAndSelect(MPU_9150_R);
+			readBuffer = I2C_ReceiveDataByte_NACK();
 		#endif	
 			I2C_Stop();
 		#ifdef LSI3DH
 			if(0x33 == readBuffer)
-		#else
-			if(0x68 == (readBuffer &= 0x7D))
 		#endif
+			USART_Transmit(readBuffer);
+			if(0x68 == (readBuffer & ~(0x81)))
 			{
 				//TODO: This part of code need to be deleted before release
 				/* For debugging only ***********/
@@ -104,7 +126,7 @@ int main(void)
 					_delay_ms(100);				//
 				}								//
 				/********************************/
-				
+				#ifdef LIS3DH
 				/* Get acceleration values from each axis */
 				I2C_SendStartAndSelect(LIS3DH_W);
 				I2C_SendByte(STATUS_REG_AUX);
@@ -128,6 +150,19 @@ int main(void)
 					accels.z = I2C_ReceiveDataByte_NACK();
 					I2C_Stop();
 				}
+				#else
+				I2C_SendStartAndSelect(MPU_9150_W);
+				I2C_SendByte(INT_STATUS_REG);
+				I2C_SendStartAndSelect(MPU_9150_R);
+				if(_BV(DATA_RDY_INT) & I2C_ReceiveDataByte_NACK())
+				{
+					I2C_SendStartAndSelect(MPU_9150_W);
+					I2C_SendByte(GYRO_XOUT_H_REG);
+					I2C_SendStartAndSelect(MPU_9150_R);
+					accels.x = (I2C_ReceiveDataBytes_ACK() << 8);
+					accels.x |= I2C_ReceiveDataByte_NACK();
+				}
+				#endif
 				state = ACCEL_RUN_STATE;
 			}
 			else
@@ -144,12 +179,21 @@ int main(void)
 			
 		/* State that control get acceleration values from slave device */
 		case ACCEL_RUN_STATE:
+		#ifdef LIS3DH
 			I2C_SendStartAndSelect(LIS3DH_W);
 			I2C_SendByte(STATUS_REG_AUX);
 			I2C_SendStartAndSelect(LIS3DH_R);
 			readBuffer = I2C_ReceiveDataByte_NACK();
 			if(_BV(DA321) & readBuffer)
+		#else
+			I2C_SendStartAndSelect(MPU_9150_W);
+			I2C_SendByte(INT_STATUS_REG);
+			I2C_SendStartAndSelect(MPU_9150_R);
+			readBuffer = I2C_ReceiveDataByte_NACK();
+			if(_BV(DATA_RDY_INT) & readBuffer)
+		#endif
 			{
+			#ifdef LIS3DH	
 				I2C_SendStartAndSelect(LIS3DH_W);
 				I2C_SendByte(OUT_X_H | 0x80);
 				I2C_SendStartAndSelect(LIS3DH_R);
@@ -164,29 +208,56 @@ int main(void)
 				//accelsTemp.z = I2C_ReceiveDataBytes_ACK();
 				//accelsTemp.z = (accelsTemp.z << 8);
 				accelsTemp.z = I2C_ReceiveDataByte_NACK();
+			#else
+				I2C_SendStartAndSelect(MPU_9150_W);
+				I2C_SendByte(GYRO_XOUT_H_REG);
+				I2C_SendStartAndSelect(MPU_9150_R);
+				accelsTemp.x = (I2C_ReceiveDataBytes_ACK() << 8);
+				accelsTemp.x |= I2C_ReceiveDataByte_NACK();
+			#endif	
+				I2C_Stop();
 				
 				state = ACCEL_WORKING_STATE;
+				
 			}	
 		break;
 			
-		/* State that compare accel values from memory and values get from acceleration sensor */	
+		/* State that compare acceleration values from memory and values get from acceleration sensor */	
 		case ACCEL_WORKING_STATE:
-			temp = 0xA5;
-			USART_Transmit(temp);
+		
+			if(accels.x > accelsTemp.x)
+			{
+				temp = accels.x - accelsTemp.x;
+				if(temp < 0) temp *= -1;
+			}
+			else
+			{
+				temp = accelsTemp.x - accels.x;
+				if(temp < 0) temp *= -1;
+			}
+			if(temp > 1000)
+			{
+				PORTB |= _BV(5);
+			}
+			else
+			{
+				PORTB &= ~_BV(5);
+			}
 			//USART_Transmit((uint8_t)(accelsTemp.x >> 8));
-			USART_Transmit(accelsTemp.x);
-			temp = 0x5A;
-			USART_Transmit(temp);
+			USART_Transmit((int8_t)(temp >> 8));
+			USART_Transmit((int8_t)temp);
+			//temp = 0x5A;
+			//USART_Transmit(temp);
 			//USART_Transmit((uint8_t)(accelsTemp.y >> 8));
-			USART_Transmit(accelsTemp.y);
-			USART_Transmit(temp);
+			//USART_Transmit(accelsTemp.y);
+			//USART_Transmit(temp);
 			//USART_Transmit((uint8_t)(accelsTemp.z >> 8));
-			USART_Transmit(accelsTemp.z);
-			USART_Transmit(temp);
-			USART_Transmit(temp);
+			//USART_Transmit(accelsTemp.z);
+			//USART_Transmit(temp);
+			//USART_Transmit(temp);
 			
 			//USART_Transmit("\n");
-			_delay_ms(50);
+			_delay_ms(250);
 			/*if(((accelsTemp.x * (-1)) - accels.x) > ACCEL_TRESHOLD )
 			{
 				for(uint8_t x = 0; x < 20; x++)

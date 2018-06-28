@@ -54,9 +54,15 @@
 
 typedef struct
 {
+	#ifdef LIS3DH
 	int8_t x;
 	int8_t y;
 	int8_t z;
+	#else
+	int16_t x;
+	int16_t y;
+	int16_t z;
+	#endif
 }	accels_ts;
 
 static uint8_t I2C_Error;
@@ -100,7 +106,7 @@ static inline void USART_Init(unsigned int ubrr)
 	UCSR0C = _BV(UCSZ01) | _BV(UCSZ00);
 }
 
-static inline void USART_Transmit(unsigned char data)
+static inline void USART_Transmit(int8_t data)
 {
 	
 	/* Wait for empty transmit buffer */

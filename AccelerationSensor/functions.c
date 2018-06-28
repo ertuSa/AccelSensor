@@ -39,8 +39,12 @@ void I2C_Init(void)
 // Function that sets I2C bus speed in uC.
 void I2C_SetBusSpeed(uint16_t speed)
 {
-	TWSR |= 0x00;	// TWSR = 
-	TWBR = _BV(TWBR6) | _BV(TWBR3);		// TWBR = 0x48
+	TWSR |= 0x00;	// TWSR = 0x00 Prescaler equals 1
+	#ifdef LIS3DH
+	TWBR = 0x48;		// TWBR = 0x48 equals 72
+	#else
+	TWBR = 0x4A;		// TWBR = 0x4A equals 74
+	#endif
 }
 
 // Function that generate START signal on I2C bus.

@@ -3,8 +3,8 @@
 
 // ASIC model
 
-#define		LIS3DH
-//#define		MPU_9150
+//#define		LIS3DH
+#define		MPU_9150
 
 // LIS3DH registers
 #ifdef LIS3DH
@@ -65,8 +65,10 @@
 // MPU-9150 registers
 #ifdef MPU_9150
 
-#define MPU_9150_R			0xD8
-#define MPU_9150_W			0x68
+#define MPU_9150_R			0xD1
+#define MPU_9150_W			0xD0
+
+#define SMPRT_DIV_REG		0x19
 
 #define CONFIG_REG			0x1A
 #define DLPF_CFG0			0

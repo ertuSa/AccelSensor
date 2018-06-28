@@ -10,12 +10,13 @@ Common symbol       size              file
 
 writeBuffer         0x1               main.o
 readBuffer          0x1               main.o
-temp                0x1               main.o
+temp                0x2               main.o
 state               0x1               main.o
-tempY               0x1               main.o
-accelsTemp          0x3               main.o
-tempX               0x1               main.o
-tempZ               0x1               main.o
+tempY               0x2               main.o
+accelsTemp          0x6               main.o
+counter             0x2               main.o
+tempX               0x2               main.o
+tempZ               0x2               main.o
 
 Discarded input sections
 
@@ -185,7 +186,7 @@ END GROUP
 .rela.plt
  *(.rela.plt)
 
-.text           0x00000000      0x388
+.text           0x00000000      0x3b6
  *(.vectors)
  .vectors       0x00000000       0x68 D:/Program Files/Atmel_Studio7_0/7.0/Packs/Atmel/ATmega_DFP/1.2.203/gcc/dev/atmega328p/avr5/crtatmega328p.o
                 0x00000000                __vector_default
@@ -302,13 +303,13 @@ END GROUP
  .text.USART_Transmit
                 0x0000012e        0xe main.o
  .text.startup.main
-                0x0000013c      0x248 main.o
+                0x0000013c      0x276 main.o
                 0x0000013c                main
-                0x00000384                . = ALIGN (0x2)
+                0x000003b2                . = ALIGN (0x2)
  *(.fini9)
- .fini9         0x00000384        0x0 d:/program files/atmel_studio7_0/7.0/toolchain/avr8/avr8-gnu-toolchain/bin/../lib/gcc/avr/5.4.0/avr5\libgcc.a(_exit.o)
-                0x00000384                _exit
-                0x00000384                exit
+ .fini9         0x000003b2        0x0 d:/program files/atmel_studio7_0/7.0/toolchain/avr8/avr8-gnu-toolchain/bin/../lib/gcc/avr/5.4.0/avr5\libgcc.a(_exit.o)
+                0x000003b2                _exit
+                0x000003b2                exit
  *(.fini9)
  *(.fini8)
  *(.fini8)
@@ -327,11 +328,11 @@ END GROUP
  *(.fini1)
  *(.fini1)
  *(.fini0)
- .fini0         0x00000384        0x4 d:/program files/atmel_studio7_0/7.0/toolchain/avr8/avr8-gnu-toolchain/bin/../lib/gcc/avr/5.4.0/avr5\libgcc.a(_exit.o)
+ .fini0         0x000003b2        0x4 d:/program files/atmel_studio7_0/7.0/toolchain/avr8/avr8-gnu-toolchain/bin/../lib/gcc/avr/5.4.0/avr5\libgcc.a(_exit.o)
  *(.fini0)
-                0x00000388                _etext = .
+                0x000003b6                _etext = .
 
-.data           0x00800100        0x0 load address 0x00000388
+.data           0x00800100        0x0 load address 0x000003b6
                 [!provide]                PROVIDE (__data_start, .)
  *(.data)
  *(.data*)
@@ -343,31 +344,32 @@ END GROUP
                 0x00800100                _edata = .
                 [!provide]                PROVIDE (__data_end, .)
 
-.bss            0x00800100        0xd
+.bss            0x00800100       0x19
                 0x00800100                PROVIDE (__bss_start, .)
  *(.bss)
  *(.bss*)
- .bss.accels    0x00800100        0x3 main.o
+ .bss.accels    0x00800100        0x6 main.o
                 0x00800100                accels
  *(COMMON)
- COMMON         0x00800103        0xa main.o
-                0x00800103                writeBuffer
-                0x00800104                readBuffer
-                0x00800105                temp
-                0x00800106                state
-                0x00800107                tempY
-                0x00800108                accelsTemp
-                0x0080010b                tempX
-                0x0080010c                tempZ
-                0x0080010d                PROVIDE (__bss_end, .)
-                0x00000388                __data_load_start = LOADADDR (.data)
-                0x00000388                __data_load_end = (__data_load_start + SIZEOF (.data))
+ COMMON         0x00800106       0x13 main.o
+                0x00800106                writeBuffer
+                0x00800107                readBuffer
+                0x00800108                temp
+                0x0080010a                state
+                0x0080010b                tempY
+                0x0080010d                accelsTemp
+                0x00800113                counter
+                0x00800115                tempX
+                0x00800117                tempZ
+                0x00800119                PROVIDE (__bss_end, .)
+                0x000003b6                __data_load_start = LOADADDR (.data)
+                0x000003b6                __data_load_end = (__data_load_start + SIZEOF (.data))
 
-.noinit         0x0080010d        0x0
+.noinit         0x00800119        0x0
                 [!provide]                PROVIDE (__noinit_start, .)
  *(.noinit*)
                 [!provide]                PROVIDE (__noinit_end, .)
-                0x0080010d                _end = .
+                0x00800119                _end = .
                 [!provide]                PROVIDE (__heap_start, .)
 
 .eeprom         0x00810000        0x0
