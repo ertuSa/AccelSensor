@@ -39,12 +39,8 @@ void I2C_Init(void)
 // Function that sets I2C bus speed in uC.
 void I2C_SetBusSpeed(uint16_t speed)
 {
-	TWSR |= 0x00;	// TWSR = 0x00 Prescaler equals 1
-	#ifdef LIS3DH
-	TWBR = 0x48;		// TWBR = 0x48 equals 72
-	#else
-	TWBR = 0x4A;		// TWBR = 0x4A equals 74
-	#endif
+	TWSR = 0x00;	// TWSR = 0x00 Prescaler equals 1
+	TWBR = 0x0C;		// TWBR = 0x4A equals 74
 }
 
 // Function that generate START signal on I2C bus.
@@ -102,7 +98,7 @@ void I2C_SendByte(uint8_t byte)
 }
 
 // Function that receive data byte from device through I2C bus.
-int8_t I2C_ReceiveDataByte_NACK(void)
+uint8_t I2C_ReceiveDataByte_NACK(void)
 {
 	TWCR = _BV(TWINT) | _BV(TWEN);
 	I2C_WaitForComplete();
@@ -114,7 +110,7 @@ int8_t I2C_ReceiveDataByte_NACK(void)
 }
 
 // Function that receive data bytes(more then one byte) from device through I2C bus.
-int8_t I2C_ReceiveDataBytes_ACK(void)
+uint8_t I2C_ReceiveDataBytes_ACK(void)
 {
 	TWCR = _BV(TWEA) | _BV(TWINT) | _BV(TWEN);
 	I2C_WaitForComplete();

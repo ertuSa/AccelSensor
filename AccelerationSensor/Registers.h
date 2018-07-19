@@ -1,98 +1,38 @@
 #ifndef _REGISTERS_H
 #define _REGISTERS_H
 
-// ASIC model
+/* Head file containing MPU-6050 register address */
 
-//#define		LIS3DH
-#define		MPU_9150
+/* Address of MPU-6050 ASIC */
+#define MPU_6050_R			0xD1
+#define MPU_6050_W			0xD0
 
-// LIS3DH registers
-#ifdef LIS3DH
+#define SMPRT_DIV_REG		0x19	// Register used to set sample rate(Gyro rate/1 + SMPRT_DIV_REG).
+									// (regmap file page 11)
 
-#define LIS3DH_R			0x31
-#define LIS3DH_W			0x30
-
-#define STATUS_REG_AUX		0x07
-#define DA1					0
-#define DA2					1
-#define DA3					2
-#define DA321				3
-#define OR1					4
-#define OR2					5
-#define OR3					6
-#define OR321				7
-
-#define WHO_AM_I			0x0F
-
-#define CTR_REG0			0x1E
-#define SDO_PU_DISC			7
-
-#define CTRL_REG1			0x20
-#define XEN					0
-#define YEN					1
-#define ZEN					2
-#define LPen				3
-#define ODR0				4
-#define ODR1				5
-#define ODR2				6
-#define ODR3				7
-
-#define CTRL_REG2			0x21
-
-
-#define CTRL_REG3			0x22
-
-
-#define CTRL_REG4			0x23
-#define SIM					0
-#define ST0					1
-#define ST1					2
-#define HR					3
-#define FS0					4
-#define FS1					5
-#define BLE					6
-#define BDU					7
-
-#define OUT_X_L				0x28
-#define OUT_X_H				0x29
-#define OUT_Y_L				0x2A
-#define OUT_Y_H				0x2B
-#define OUT_Z_L				0x2C
-#define OUT_Z_H				0x2E
-
-#endif
-
-// MPU-9150 registers
-#ifdef MPU_9150
-
-#define MPU_9150_R			0xD1
-#define MPU_9150_W			0xD0
-
-#define SMPRT_DIV_REG		0x19
-
-#define CONFIG_REG			0x1A
-#define DLPF_CFG0			0
-#define DLPF_CFG1			1
-#define DLPF_CFG2			2
+#define CONFIG_REG			0x1A	// Register used to set FSYNC pin sampling and the Digital
+#define DLPF_CFG0			0		// Low Pass Filter(DLPF). (regmap file page 13)
+#define DLPF_CFG1			1		
+#define DLPF_CFG2			2		
 #define EXT_SYNC_SET0		3
 #define EXT_SYNC_SET1		4
 #define EXT_SYNC_SET2		5
 
-#define GYRO_CONFIG_REG		0x1B
-#define FS_SEL0				3
+#define GYRO_CONFIG_REG		0x1B	// Register used to trigger gyro self-test and configure the gyro
+#define FS_SEL0				3		// full scale range. (regmap file page 14)
 #define FS_SEL1				4
 #define ZG_ST				5
 #define YG_ST				6
 #define XG_ST				7
 
-#define ACCEL_CONFIG_REG	0x1C
-#define AFS_SEL0			3
+#define ACCEL_CONFIG_REG	0x1C	// Register used to trigger accel self-test and configure the accel
+#define AFS_SEL0			3		// full scale range. (regmap file page 15)
 #define AFS_SEL1			4
 #define ZA_ST				5
 #define YA_ST				6
 #define XA_ST				7
 
-#define FIFO_EN_REG			0x23
+#define FIFO_EN_REG			0x23	// 
 #define SLVO_FIFO_EN		0
 #define SLV1_FIFO_EN		1
 #define SLV2_FIFO_EN		2
@@ -159,7 +99,5 @@
 #define FIFO_R_W_REG		0x74
 
 #define WHO_AM_I_REG		0x75
-
-#endif
 
 #endif
