@@ -53,6 +53,7 @@ long yInit;
 long zInit;
 
 _Bool zAlarm;
+_Bool angleAlarm;
 
 double angleX;
 double angleY;
@@ -79,6 +80,7 @@ int main(void)
 {
 	state = ACCEL_INIT_MM;
 	zAlarm = FALSE;
+	angleAlarm = FALSE;
 	
     while (1) 
     {
@@ -90,10 +92,10 @@ int main(void)
 		/* State that initiate I/O and communication ports of uC */
 		case ACCEL_INIT_MM:
 			/* configuration of uC, I/O pins */
-			DDRB |= _BV(PINB2);		/* configured as an output */
+			DDRB |= (_BV(PINB1) | _BV(PINB2)) ;		/* configured as an output */
 			DDRC &= ~(_BV(PINC0) | _BV(PINC1) | _BV(PINC2) | _BV(PINC3)); /* configured as an input */
 			PORTC |= 0x0F; /* input pull-up configuration */
-			PORTB |= _BV(PINB0);
+			PORTB |= _BV(PINB1);
 			
 			/* TODO: ??? */
 			//PRR &= ~( _BV(PRTWI) | _BV(PRUSART0) );
@@ -156,7 +158,7 @@ int main(void)
 				/* If communication with device is working ***********/
 				for(n = 0; n < 20; n++)								 //
 				{													 //
-					PORTB ^= _BV(PINB5);							 //
+					PORTB ^= _BV(PINB1);							 //
 					_delay_ms(100);									 //
 				}													 //
 				/*****************************************************/
@@ -166,14 +168,14 @@ int main(void)
 			{
 				// TODO: Need to add code that reset uC if communication is wrong
 				/* If there is fault in communication with device ****/
-				PORTB |= _BV(PB5);									 //
 				for(n = 0; n < 10; n++)								 //
 				{													 //
-					PORTB ^= _BV(PINB5);							 //
+					PORTB ^= _BV(PINB1);							 //
 					_delay_ms(500);									 //					
 				}													 //
 				/*****************************************************/
 			}
+			//PORTB |= _BV(PINB1);
 			break; /* End of ACCEL_CONFIG_STATE case */
 			
 	
@@ -231,6 +233,11 @@ int main(void)
 					//ltoa(zInit, bufforZ_Init, 10);
 				}
 			}
+			PORTB &= ~(_BV(PINB1));
+			
+			_delay_ms(6000);
+			
+			PORTB |= _BV(PINB1);
 			break; /* End of ACCEL_INIT_STATE case */
 			
 			
@@ -257,18 +264,23 @@ int main(void)
 				state = ACCEL_WORKING_STATE;
 				/* TODO: Need to adjust condition, maybe it need to be moved somewhere else */
 				/*
-				if(1000 < abs((zInit < accelsTemp.z) ? (accelsTemp.z - zInit) : (zInit - accelsTemp.z)))
+				if(10 < abs((zInit < accelsTemp.z) ? (accelsTemp.z - zInit) : (zInit - accelsTemp.z)))
 				{
-					PORTB |= _BV(PINB5);
+					//if(!zAlarm)
+					//{
+					PORTB |= _BV(PINB2);
 					_delay_ms(1000);
-					zAlarm = TRUE;
+					//zAlarm = TRUE;
+					//}
+					//else
+					//{
+						// Do nothing	
+					//}
 				}
 				else
 				{
-					if(zAlarm) 
 					{
-						PORTB &= ~(_BV(PINB5));
-						zAlarm = FALSE;
+						// Do nothing
 					}
 				}
 				*/
@@ -298,8 +310,8 @@ int main(void)
 				accels.y = 0;
 				accels.z = 0;
 				
-				angleX = -(atan2((double)(x), (double)(z))/ (PI/180));
-				angleY = -(atan2((double)(y), (double)(z)) / (PI/180));
+				angleX = (atan2((double)(x), (double)(z))/ (PI/180));
+				angleY = (atan2((double)(y), (double)(z)) / (PI/180));
 				
 				state = ACCEL_COMP_STATE;
 			}	
@@ -310,61 +322,30 @@ int main(void)
 			/* TODO: Need to adjust it and add option to chose on what condition alarm should be turned on */
 			if(10 < abs(angleX > angleX_Init ? angleX - angleX_Init : angleX_Init - angleX))
 			{
+				//if(!angleAlarm)
+				//{
 				PORTB |= _BV(PINB2);
+				//_delay_ms(1000);
+				//angleAlarm = TRUE;
+				//}
+				//else
+				//{
+					// Do nothing
+				//}
 			}
 			else
 			{
+				if(angleAlarm)
+				{
 				PORTB &= ~(_BV(PINB2));
+				angleAlarm = FALSE;
+				}
+				else
+				{
+					// Do nothing
+				}
 			}
-			/* TODO: Need to adjust it and add option to chose on what condition alarm should be turned on */
-			
-			if(500 < abs((xInit < x) ? (x - xInit) : (xInit - x)))
-			{
-				PORTB |= _BV(PINB2);
-			}
-			else
-			{
-				PORTB &= ~(_BV(PINB2));
-			}
-			
-			
-			/*
-			for(n = 0; n < sizeof(bufforX_Init); n++)
-			{
-				USART_Transmit(bufforX_Init[n]);
-			}
-			itoa(x,bufforX,10);
-			for(n = 0; n < sizeof(bufforX); n++)
-			{
-				USART_Transmit(bufforX[n]);
-			}
-			for(n = 0; n < sizeof(bufforX); n++)
-			{
-				bufforX[n] = " ";
-			}
-			*/
-			
-			/* TODO: Delete this line of code when project is done */
-			/*
-			itoa(angleX, bufforAngleX, 10);
-			itoa(angleY, bufforAngleY, 10);
-			for(n = 0; n < sizeof(bufforAngleX); n++)
-			{
-				//USART_Transmit(bufforAngleX[n]);
-			}
-			for(n = 0; n < sizeof(bufforAngleY); n++)
-			{
-				//USART_Transmit(bufforAngleY[n]);
-			}
-			for(n = 0; n < sizeof(bufforAngleX); n++)
-			{
-				bufforAngleX[n] = "";
-			}
-			for(n = 0; n < sizeof(bufforAngleY); n++)
-			{
-				bufforAngleY[n] = "";
-			}
-			*/
+
 			state = ACCEL_RUN_STATE;
 			
 			/* TODO: Change delay time when project is done */
