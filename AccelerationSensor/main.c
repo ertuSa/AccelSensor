@@ -7,7 +7,7 @@
  *	Notes:
  *		-	define ASIC type(LIS3DH/MPU_9150) in Registers header file
  */ 
-#include "Registers.h"		
+#include "MPU_6050_REG.h"		
 
 #define F_CPU				16000000UL
 #define MYUBRR				0x67 /* decimal 103 = baud rate 9600 */
@@ -22,17 +22,42 @@
 #include <stdlib.h>
 #include "function.h"
 
+/**********************************************
+*	Constants
+***********************************************/
+
 const double PI = 3.141592;
 const long COUNT_NO = 100;
 
+/**********************************************
+*	Variables
+***********************************************/
+
+short int readBuffer;
+short int state;
+short int n;
+short int accelConf;
+short int gyroConf;
+
+unsigned int tempX;
+unsigned int tempY;
+unsigned int tempZ;
+
 int count;
-short int readBuffer, state, n, accelConf, gyroConf;
-unsigned int tempX, tempY, tempZ;
-long x, xInit, y, yInit, z, zInit;
+
+long x;
+long y;
+long z;
+long xInit;
+long yInit;
+long zInit;
 
 _Bool zAlarm;
 
-double angleX, angleY, angleX_Init, angleY_Init;
+double angleX;
+double angleY;
+double angleX_Init;
+double angleY_Init;
 
 char bufforX[11];
 char bufforY[11];
@@ -46,9 +71,13 @@ accels_ts accelsTemp;
 
 accels_ts_i32 accels;
 
+/**********************************************
+*	Source code
+***********************************************/
+
 int main(void)
 {
-	state = ACCEL_INIT_DEV;
+	state = ACCEL_INIT_MM;
 	zAlarm = FALSE;
 	
     while (1) 
@@ -59,7 +88,7 @@ int main(void)
 		
 			
 		/* State that initiate I/O and communication ports of uC */
-		case ACCEL_INIT_DEV:
+		case ACCEL_INIT_MM:
 			/* configuration of uC, I/O pins */
 			DDRB |= _BV(PINB2);		/* configured as an output */
 			DDRC &= ~(_BV(PINC0) | _BV(PINC1) | _BV(PINC2) | _BV(PINC3)); /* configured as an input */
@@ -80,17 +109,7 @@ int main(void)
 			
 			/* Changing the state of state machine */
 			state = ACCEL_CONFIG_STATE;
-			
-			//TODO: This part of code need to be deleted before release
-			/* For debugging only ***********/ 
-			_delay_ms(100);					//
-			for (n = 0; n < 4; n++)		//
-			{								//
-				_delay_ms(250);				//
-				PORTB ^= _BV(PINB5);			//
-			}								//
-			/********************************/
-		break;
+			break; /* End of ACCEL_INIT_MM */
 		
 		
 		/* State that configure slave device */	
@@ -134,38 +153,44 @@ int main(void)
 			
 			if(0x68 == (readBuffer & ~(0x81)))
 			{
-				//TODO: This part of code need to be deleted before release
-				/* For debugging only ***********/
-				for(n = 0; n < 20; n++)	//
-				{								//
-					PORTB ^= _BV(PB5);			//
-					_delay_ms(100);				//
-				}								//
-				/********************************/
+				/* If communication with device is working ***********/
+				for(n = 0; n < 20; n++)								 //
+				{													 //
+					PORTB ^= _BV(PINB5);							 //
+					_delay_ms(100);									 //
+				}													 //
+				/*****************************************************/
 				state = ACCEL_INIT_DATA;	
 			}
 			else
 			{
-				//TODO: This part of code need to be deleted before release
-				/* For debugging only ***********/
-				PORTB |= _BV(PB5);				//
-				_delay_ms(2000);				//
-				/********************************/
+				// TODO: Need to add code that reset uC if communication is wrong
+				/* If there is fault in communication with device ****/
+				PORTB |= _BV(PB5);									 //
+				for(n = 0; n < 10; n++)								 //
+				{													 //
+					PORTB ^= _BV(PINB5);							 //
+					_delay_ms(500);									 //					
+				}													 //
+				/*****************************************************/
 			}
-		break;
+			break; /* End of ACCEL_CONFIG_STATE case */
 			
-			
+	
 		case ACCEL_INIT_DATA:
 			I2C_SendStartAndSelect(MPU_6050_W);
 			I2C_SendByte(INT_STATUS_REG);
 			I2C_SendStartAndSelect(MPU_6050_R);
 			readBuffer = I2C_ReceiveDataByte_NACK();
 			I2C_Stop();
+			/*	Average values for each axis from 100 samples from device is used 
+			*	to calculate reference value of slope angle */
 			if(_BV(DATA_RDY_INT) & readBuffer)
 			{
 				I2C_SendStartAndSelect(MPU_6050_W);
 				I2C_SendByte(ACCEL_XOUT_H_REG);
 				I2C_SendStartAndSelect(MPU_6050_R);
+				/* Taking reading from MPU-6050 */
 				accelsTemp.x = (I2C_ReceiveDataBytes_ACK() << 8);
 				accelsTemp.x |= I2C_ReceiveDataBytes_ACK();
 				accelsTemp.y = (I2C_ReceiveDataBytes_ACK() << 8);
@@ -184,12 +209,16 @@ int main(void)
 			
 				if(COUNT_NO == count)
 				{
-				
+					/* Calculation of average acceleration value from 100 readings */
 					xInit = (long)(accels.x/COUNT_NO);
 					yInit = (long)(accels.y/COUNT_NO);
 					zInit = (long)(accels.z/COUNT_NO);
-					angleX_Init = (atan2((double)(xInit), (double)(zInit)) / (PI/180));// - 90.0;
-					angleY_Init = (atan2((double)(yInit), (double)(zInit)) / (PI/180));// - 90.0;
+					
+					/* Slop angle calculation using arctg function */
+					angleX_Init = (atan2((double)(xInit), (double)(zInit)) / (PI/180));
+					angleY_Init = (atan2((double)(yInit), (double)(zInit)) / (PI/180));
+					
+					/* Reseting variables that be used later */
 					count = 0;
 					accels.x = 0;
 					accels.y = 0;
@@ -197,12 +226,12 @@ int main(void)
 				
 					state = ACCEL_RUN_STATE;
 					
-					/* TODO: when finish need to be deleted */
-					ltoa(xInit, bufforX_Init, 10);
-					ltoa(zInit, bufforZ_Init, 10);
+					/* TODO: when code is finish need to be deleted */
+					//ltoa(xInit, bufforX_Init, 10);
+					//ltoa(zInit, bufforZ_Init, 10);
 				}
 			}
-		break;
+			break; /* End of ACCEL_INIT_STATE case */
 			
 			
 		/* State that control get acceleration values from slave device */
@@ -244,7 +273,7 @@ int main(void)
 				}
 				*/
 			}
-		break;
+			break; /* End of ACCEL_RUN_STATE case */
 			
 			
 		/* State that compare acceleration values from memory and values get from acceleration sensor */	
@@ -272,14 +301,14 @@ int main(void)
 				angleX = -(atan2((double)(x), (double)(z))/ (PI/180));
 				angleY = -(atan2((double)(y), (double)(z)) / (PI/180));
 				
-				state = ACCEL_PRINT_ST;
+				state = ACCEL_COMP_STATE;
 			}	
-		break;
+			break; /* End of ACCEL_WORKING_STATE case */
 		
 		
-		case ACCEL_PRINT_ST:
+		case ACCEL_COMP_STATE:
 			/* TODO: Need to adjust it and add option to chose on what condition alarm should be turned on */
-			if(7 < abs(angleX > angleX_Init ? angleX - angleX_Init : angleX_Init - angleX))
+			if(10 < abs(angleX > angleX_Init ? angleX - angleX_Init : angleX_Init - angleX))
 			{
 				PORTB |= _BV(PINB2);
 			}
@@ -288,16 +317,18 @@ int main(void)
 				PORTB &= ~(_BV(PINB2));
 			}
 			/* TODO: Need to adjust it and add option to chose on what condition alarm should be turned on */
-			/*
-			if(300 < abs((xInit < x) ? (x - xInit) : (xInit - x)))
+			
+			if(500 < abs((xInit < x) ? (x - xInit) : (xInit - x)))
 			{
-				PORTB |= _BV(PINB5);
+				PORTB |= _BV(PINB2);
 			}
 			else
 			{
-				PORTB &= ~(_BV(PINB5));
+				PORTB &= ~(_BV(PINB2));
 			}
-		
+			
+			
+			/*
 			for(n = 0; n < sizeof(bufforX_Init); n++)
 			{
 				USART_Transmit(bufforX_Init[n]);
@@ -337,9 +368,18 @@ int main(void)
 			state = ACCEL_RUN_STATE;
 			
 			/* TODO: Change delay time when project is done */
-			_delay_ms(1000);
-		break;
-		}
-    }
+			_delay_ms(500);
+			break; /* End of ACCEL_COMP_STATE */
+			
+			
+		} /* End of Switch(state) */
+		
+		
+    } /* End of while(1) loop */
+	
+	
+	return 0; /* End of program, MM should never get here */
+	
+	
 }
 

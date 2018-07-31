@@ -1,4 +1,4 @@
-main.d main.o: .././main.c .././Registers.h \
+main.d main.o: .././main.c .././MPU_6050_REG.h \
  d:\program\ files\atmel_studio7_0\7.0\toolchain\avr8\avr8-gnu-toolchain\avr\include\avr\io.h \
  d:\program\ files\atmel_studio7_0\7.0\toolchain\avr8\avr8-gnu-toolchain\avr\include\avr\sfr_defs.h \
  d:\program\ files\atmel_studio7_0\7.0\toolchain\avr8\avr8-gnu-toolchain\avr\include\inttypes.h \
@@ -18,7 +18,7 @@ main.d main.o: .././main.c .././Registers.h \
  .././function.h \
  d:\program\ files\atmel_studio7_0\7.0\toolchain\avr8\avr8-gnu-toolchain\avr\include\util\twi.h
 
-.././Registers.h:
+.././MPU_6050_REG.h:
 
 d:\program\ files\atmel_studio7_0\7.0\toolchain\avr8\avr8-gnu-toolchain\avr\include\avr\io.h:
 

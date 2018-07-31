@@ -1,5 +1,5 @@
-#ifndef _REGISTERS_H
-#define _REGISTERS_H
+#ifndef _MPU_6050_REG_H
+#define _MPU_6050_REG_H
 
 /* Head file containing MPU-6050 register address */
 
