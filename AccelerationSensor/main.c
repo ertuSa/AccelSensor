@@ -6,21 +6,33 @@
  *
  *	Notes:
  *		-	define ASIC type(LIS3DH/MPU_9150) in Registers header file
- */ 
-#include "MPU_6050_REG.h"		
+ */
+#include <avr/io.h>
+#include <math.h>
+#include <stdlib.h>
+#include "function.h" 
+#include "MPU_6050_REG.h"
+#include <util/delay.h>	
 
-#define F_CPU				16000000UL
-#define MYUBRR				0x67 /* decimal 103 = baud rate 9600 */
+/**********************************************
+*	Macros and defines
+***********************************************/
+
+
 
 #define ACCEL_TRESHOLD		31
 #define ACCEL_CONF_BITMASK	0x03
 #define GYRO_CONF_BITMASK	0x0C
 
-#include <avr/io.h>
-#include <util/delay.h>
-#include <math.h>
-#include <stdlib.h>
-#include "function.h"
+#define LED_ON				PORTB &= ~(_BV(PINB1))
+#define LED_OFF				PORTB |= _BV(PINB1)
+#define LED_TOGGLE			PORTB ^= _BV(PINB1)
+
+#define ALARM_ON			PORTB |= _BV(PINB2)
+#define ALARM_OFF			PORTB &= ~(_BV(PINB2))
+
+#define TRUE	1U
+#define FALSE	0U
 
 /**********************************************
 *	Constants
@@ -30,7 +42,7 @@ const double PI = 3.141592;
 const long COUNT_NO = 100;
 
 /**********************************************
-*	Variables
+*	Global variables
 ***********************************************/
 
 short int readBuffer;
@@ -42,6 +54,10 @@ short int gyroConf;
 unsigned int tempX;
 unsigned int tempY;
 unsigned int tempZ;
+unsigned int angleAlarmConfig;
+unsigned int zAlarmCnt;
+unsigned int angleXAlarmCnt;
+unsigned int angleYAlarmCnt;
 
 int count;
 
@@ -53,7 +69,10 @@ long yInit;
 long zInit;
 
 _Bool zAlarm;
-_Bool angleAlarm;
+_Bool angleAlarmX;
+_Bool angleAlarmY;
+_Bool angleXAlarm;
+_Bool angleYAlarm;
 
 double angleX;
 double angleY;
@@ -72,6 +91,16 @@ accels_ts accelsTemp;
 
 accels_ts_i32 accels;
 
+enum accelState
+{
+	ACCEL_INIT_MM,
+	ACCEL_CONFIG_STATE,
+	ACCEL_INIT_DATA,
+	ACCEL_RUN_STATE,
+	ACCEL_WORKING_STATE,
+	ACCEL_COMP_STATE,
+};
+
 /**********************************************
 *	Source code
 ***********************************************/
@@ -80,7 +109,13 @@ int main(void)
 {
 	state = ACCEL_INIT_MM;
 	zAlarm = FALSE;
-	angleAlarm = FALSE;
+	angleAlarmX = FALSE;
+	angleAlarmY = FALSE;
+	angleAlarmConfig = 0;
+	zAlarmCnt = 0;
+	angleXAlarmCnt = 0;
+	angleYAlarmCnt = 0;
+	
 	
     while (1) 
     {
@@ -94,20 +129,54 @@ int main(void)
 			/* configuration of uC, I/O pins */
 			DDRB |= (_BV(PINB1) | _BV(PINB2)) ;		/* configured as an output */
 			DDRC &= ~(_BV(PINC0) | _BV(PINC1) | _BV(PINC2) | _BV(PINC3)); /* configured as an input */
-			PORTC |= 0x0F; /* input pull-up configuration */
+			/* inputs pull-up configuration */
+			PORTC |= 0x0F;
 			PORTB |= _BV(PINB1);
 			
-			/* TODO: ??? */
-			//PRR &= ~( _BV(PRTWI) | _BV(PRUSART0) );
-			
-			/* Initialization of USART communication */
-			//USART_Init(MYUBRR);
-			/* Initialization of I2C communication */
 			I2C_Init();
 			
-			/* Reading configuration for accel and gyro full scale range */
-			accelConf = PINC & ACCEL_CONF_BITMASK;
-			gyroConf = PINC & GYRO_CONF_BITMASK;
+			accelConf = 0x00;
+			gyroConf = 0x00;
+			
+			/* Read configuration for angle difference that turn alarm ON  */
+			if(0 == (PINC & (_BV(PINC2) | _BV(PINC3))))
+			{
+				angleAlarmConfig = 2;
+			}
+			else if(8 == (PINC & (_BV(PINC2) | _BV(PINC3))))
+			{
+				angleAlarmConfig = 3;
+			}
+			else if(4 == (PINC & (_BV(PINC2) | _BV(PINC3))))
+			{
+				angleAlarmConfig = 4;
+			}
+			else if(12 == (PINC & (_BV(PINC2) | _BV(PINC3))))
+			{
+				angleAlarmConfig = 5;
+			}
+			
+			/* Read configuration - which condition use to turn alarm ON */
+			if(0 == (PINC & (_BV(PINC0) | _BV(PINC1))))
+			{
+				angleXAlarm = TRUE;
+				angleYAlarm = TRUE;
+			}
+			else if(2 == (PINC & (_BV(PINC0) | _BV(PINC1))))
+			{
+				angleXAlarm = TRUE;
+				angleYAlarm = FALSE;
+			}
+			else if(1 == (PINC & (_BV(PINC0) | _BV(PINC1))))
+			{
+				angleYAlarm = TRUE;
+				angleXAlarm = FALSE;
+			}
+			else if(3 == (PINC & (_BV(PINC0) | _BV(PINC1))))
+			{
+				angleXAlarm = FALSE;
+				angleYAlarm = FALSE;
+			}
 			
 			/* Changing the state of state machine */
 			state = ACCEL_CONFIG_STATE;
@@ -150,15 +219,13 @@ int main(void)
 			I2C_SendStartAndSelect(MPU_6050_R);
 			readBuffer = I2C_ReceiveDataByte_NACK();	
 			I2C_Stop();
-
-			//USART_Transmit(readBuffer);
 			
 			if(0x68 == (readBuffer & ~(0x81)))
 			{
 				/* If communication with device is working ***********/
 				for(n = 0; n < 20; n++)								 //
 				{													 //
-					PORTB ^= _BV(PINB1);							 //
+					LED_TOGGLE;										 //
 					_delay_ms(100);									 //
 				}													 //
 				/*****************************************************/
@@ -166,16 +233,17 @@ int main(void)
 			}
 			else
 			{
-				// TODO: Need to add code that reset uC if communication is wrong
 				/* If there is fault in communication with device ****/
 				for(n = 0; n < 10; n++)								 //
 				{													 //
-					PORTB ^= _BV(PINB1);							 //
+					LED_TOGGLE;										 //
 					_delay_ms(500);									 //					
 				}													 //
 				/*****************************************************/
 			}
-			//PORTB |= _BV(PINB1);
+			LED_ON;
+			_delay_ms(6000);
+			LED_OFF;
 			break; /* End of ACCEL_CONFIG_STATE case */
 			
 	
@@ -192,7 +260,7 @@ int main(void)
 				I2C_SendStartAndSelect(MPU_6050_W);
 				I2C_SendByte(ACCEL_XOUT_H_REG);
 				I2C_SendStartAndSelect(MPU_6050_R);
-				/* Taking reading from MPU-6050 */
+				/* Read data from MPU-6050 */
 				accelsTemp.x = (I2C_ReceiveDataBytes_ACK() << 8);
 				accelsTemp.x |= I2C_ReceiveDataBytes_ACK();
 				accelsTemp.y = (I2C_ReceiveDataBytes_ACK() << 8);
@@ -227,17 +295,8 @@ int main(void)
 					accels.z = 0;
 				
 					state = ACCEL_RUN_STATE;
-					
-					/* TODO: when code is finish need to be deleted */
-					//ltoa(xInit, bufforX_Init, 10);
-					//ltoa(zInit, bufforZ_Init, 10);
 				}
 			}
-			PORTB &= ~(_BV(PINB1));
-			
-			_delay_ms(6000);
-			
-			PORTB |= _BV(PINB1);
 			break; /* End of ACCEL_INIT_STATE case */
 			
 			
@@ -262,28 +321,33 @@ int main(void)
 				I2C_Stop();
 				
 				state = ACCEL_WORKING_STATE;
-				/* TODO: Need to adjust condition, maybe it need to be moved somewhere else */
 				/*
-				if(10 < abs((zInit < accelsTemp.z) ? (accelsTemp.z - zInit) : (zInit - accelsTemp.z)))
+				if(16000 < abs((zInit < accelsTemp.z) ? (accelsTemp.z - zInit) : (zInit - accelsTemp.z)))
 				{
-					//if(!zAlarm)
-					//{
-					PORTB |= _BV(PINB2);
-					_delay_ms(1000);
-					//zAlarm = TRUE;
-					//}
-					//else
-					//{
-						// Do nothing	
-					//}
+					LED_OFF;
+					ALARM_ON;
+					zAlarm = TRUE;
 				}
-				else
+				else if(zAlarm)
 				{
+					if(++zAlarmCnt > 1000)
+					{
+						zAlarm = FALSE;
+						zAlarmCnt = 0;
+						ALARM_OFF;
+						LED_ON;
+					}
+					else
 					{
 						// Do nothing
 					}
 				}
+				else
+				{
+					// Do nothing
+				}
 				*/
+				
 			}
 			break; /* End of ACCEL_RUN_STATE case */
 			
@@ -320,36 +384,70 @@ int main(void)
 		
 		case ACCEL_COMP_STATE:
 			/* TODO: Need to adjust it and add option to chose on what condition alarm should be turned on */
-			if(10 < abs(angleX > angleX_Init ? angleX - angleX_Init : angleX_Init - angleX))
+			
+			if (angleXAlarm)
 			{
-				//if(!angleAlarm)
-				//{
-				PORTB |= _BV(PINB2);
-				//_delay_ms(1000);
-				//angleAlarm = TRUE;
-				//}
-				//else
-				//{
-					// Do nothing
-				//}
-			}
+				if(angleAlarmConfig < abs(angleX > angleX_Init ? angleX - angleX_Init : angleX_Init - angleX))
+					{
+						if(++angleXAlarmCnt > 1)
+						{
+						ALARM_ON;
+						angleAlarmX = TRUE;
+						}
+						else
+						{
+							// Do nothing
+						}
+					}
+					else if(angleAlarmX)
+					{
+						ALARM_OFF;
+						angleAlarmX = FALSE;
+						angleXAlarmCnt = 0;
+					}
+					else
+					{
+						// Do nothing
+					}
+			} 
 			else
 			{
-				if(angleAlarm)
+				// Do nothing
+			}
+			
+			if (angleYAlarm)
+			{
+				if(angleAlarmConfig < abs(angleY > angleY_Init ? angleY - angleY_Init : angleY_Init - angleY))
 				{
-				PORTB &= ~(_BV(PINB2));
-				angleAlarm = FALSE;
+					if(++angleYAlarmCnt > 1)
+					{
+						ALARM_ON;
+						angleAlarmY = TRUE;
+					}
+					else
+					{
+						// Do nothing
+					}
+				}
+				else if(angleAlarmY)
+				{
+					ALARM_OFF;
+					angleAlarmY = FALSE;
+					angleYAlarmCnt = 0;
 				}
 				else
 				{
 					// Do nothing
 				}
 			}
+			else
+			{
+				// Do nothing
+			}
 
 			state = ACCEL_RUN_STATE;
 			
-			/* TODO: Change delay time when project is done */
-			_delay_ms(500);
+			_delay_ms(20);
 			break; /* End of ACCEL_COMP_STATE */
 			
 			
@@ -360,7 +458,6 @@ int main(void)
 	
 	
 	return 0; /* End of program, MM should never get here */
-	
 	
 }
 

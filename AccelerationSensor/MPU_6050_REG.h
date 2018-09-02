@@ -1,6 +1,8 @@
 #ifndef _MPU_6050_REG_H
 #define _MPU_6050_REG_H
 
+#define F_CPU				16000000UL
+
 /* Head file containing MPU-6050 register address */
 
 /* Address of MPU-6050 ASIC */

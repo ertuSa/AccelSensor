@@ -37,7 +37,7 @@ void I2C_Init(void)
 }
 
 // Function that sets I2C bus speed in uC.
-void I2C_SetBusSpeed(uint16_t speed)
+void I2C_SetBusSpeed()
 {
 	TWSR = 0x00;	// TWSR = 0x00 Prescaler equals 1
 	TWBR = 0x0C;		// TWBR = 0x4A equals 74

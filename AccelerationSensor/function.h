@@ -26,13 +26,6 @@
 
 #define ADR_INC_MASK		0x80
 
-#define TRUE	1U
-#define FALSE	0U
-
-
-
-
-
 /*******************************************************************************
 *		Macros
 ********************************************************************************/
@@ -48,16 +41,6 @@
 /*******************************************************************************
 *		Variables
 ********************************************************************************/
-
-enum accelState
-{
-	ACCEL_INIT_MM,		
-	ACCEL_CONFIG_STATE,	
-	ACCEL_INIT_DATA,
-	ACCEL_RUN_STATE,		
-	ACCEL_WORKING_STATE,	
-	ACCEL_COMP_STATE,		
-};
 
 typedef struct
 {
@@ -102,40 +85,6 @@ static inline void I2C_SetError(uint8_t err)
 {
 	I2C_Error = err;
 }
-/*
-static inline void USART_Init(unsigned int ubrr)
-{
-	// Set baud rate
-	UBRR0H = (unsigned char)(ubrr>>8);
-	UBRR0L = (unsigned char)ubrr;
-	// Enable receiver and transmitter
-	UCSR0B = _BV(RXEN0) | _BV(TXEN0);
-	// Set frame format: 8 data bit, 1 stop bit 
-	UCSR0C = _BV(UCSZ01) | _BV(UCSZ00);
-}*/
-/*
-static inline void USART_Transmit(char data)
-{
-	
-	// Wait for empty transmit buffer 
-	while( !(UCSR0A & _BV(5)) )
-	{
-		;
-	}
-	UDR0 = data;
-}*/
-/*
-static inline void USART_Transmit_I16(int8_t data)
-{
-	
-	// Wait for empty transmit buffer 
-	while( !(UCSR0A & _BV(5)) )
-	{
-		;
-	}
-	UDR0 = data;
-}
-*/
 
 
 #endif
